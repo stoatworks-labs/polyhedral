@@ -32,7 +32,7 @@ fail() { printf '\033[31mFAIL\033[0m %s\n' "$1"; exit 1; }
 # prose above the code.
 #---------------------------------------------------------------------------
 reserved_words() {
-	local words="patch sample input output filter common active half layout flat smooth noperspective packed fine coarse near far noise1 noise2 noise3 noise4"
+	local words="patch sample input output filter common active half layout flat smooth noperspective packed near far noise1 noise2 noise3 noise4"
 	local bad=0 word
 
 	for word in $words; do

@@ -1671,12 +1671,13 @@ int runReadback( const Perturb& perturb )
 /// the same silhouette, because S maps the solid onto itself.
 int runSilhouette( const Perturb& perturb )
 {
-	std::printf( "\n=== silhouette: a die drawn at R and at R S covers the same pixels\n" );
+	std::printf( "\n=== silhouette: a die drawn at R and at R S covers the same pixels, at two rasters\n" );
+	for( const int scale : { 1, 2 } )
 	for( geo::DieType die : { geo::DieType::D4, geo::DieType::D6, geo::DieType::D8, geo::DieType::D10, geo::DieType::D12,
 	                          geo::DieType::D20 } )
 	{
 		Rig rig;
-		if( !rig.Init( 320, 180 ) )
+		if( !rig.Init( 320 * scale, 180 * scale ) )
 			return 1;
 		rig.Set( PT_DIE, static_cast< float >( die ) );
 		rig.Set( PT_SIZE, 0.9f );
@@ -1725,8 +1726,8 @@ int runSilhouette( const Perturb& perturb )
 		//A supersample landing within float rounding of an edge can flip:
 		//that is a pixel or two, not a shape.
 		Check( covered > 500 && worstPixels <= 2,
-		       fmt( "%-4s %zu symmetries (the plan's first): at most %d of %ld covered pixels differ", geo::DieName( die ),
-		            tests.size(), worstPixels, covered ) );
+		       fmt( "%-4s %dx%d, %zu symmetries (the plan's first): at most %d of %ld covered pixels differ", geo::DieName( die ),
+		            rig.width, rig.height, tests.size(), worstPixels, covered ) );
 	}
 	return Verdict();
 }
@@ -1885,20 +1886,23 @@ int runFonts( const Perturb& )
 
 int runOver( const Perturb& )
 {
-	std::printf( "\n=== over-check: away from the dice the clip is untouched; Mix 0 is the clip\n" );
+	std::printf( "\n=== over-check: away from the dice the clip is untouched; Mix 0 is the clip; two rasters\n" );
+	for( const int scale : { 1, 2 } )
+	{
+	const int W = 320 * scale, H = 180 * scale;
 	Rig rig( true );
-	if( !rig.Init( 320, 180 ) )
+	if( !rig.Init( W, H ) )
 		return 1;
 	rig.Set( PT_SIZE, 0.2f );
 	if( !rig.RollToRest() )
 		return 1;
-	const Floats card = buildCard( 320, 180 );
+	const Floats card = buildCard( W, H );
 	const Floats out  = rig.Output();
 	const Camera& cam = rig.plugin.CurrentCamera();
 	const roll::Plan& plan = rig.plugin.CurrentPlan();
 	long far = 0, changed = 0;
-	for( int y = 0; y < 180; ++y )
-		for( int x = 0; x < 320; ++x )
+	for( int y = 0; y < H; ++y )
+		for( int x = 0; x < W; ++x )
 		{
 			bool close = false;
 			for( size_t i = 0; i < plan.bodies.size(); ++i )
@@ -1906,24 +1910,25 @@ int runOver( const Perturb& )
 				double px = 0, py = 0, ex = 0, ey = 0;
 				const roll::Pose pose = plan.PoseAt( i, plan.duration );
 				const double radius   = geo::GetSolid( plan.bodies[ i ].shape ).circumradius;
-				cam.Project( pose.x, 320, 180, px, py );
-				cam.Project( pose.x + V3 { radius, 0, 0 }, 320, 180, ex, ey );
+				cam.Project( pose.x, W, H, px, py );
+				cam.Project( pose.x + V3 { radius, 0, 0 }, W, H, ex, ey );
 				close = close || std::hypot( x + 0.5 - px, y + 0.5 - py ) < 5.0 * std::hypot( ex - px, ey - py );
 			}
 			if( close )
 				continue;
 			++far;
 			for( int c = 0; c < 4; ++c )
-				changed += std::fabs( out[ ( static_cast< size_t >( y ) * 320 + x ) * 4 + c ] - card[ ( static_cast< size_t >( y ) * 320 + x ) * 4 + c ] ) > 1e-6f;
+				changed += std::fabs( out[ ( static_cast< size_t >( y ) * W + x ) * 4 + c ] - card[ ( static_cast< size_t >( y ) * W + x ) * 4 + c ] ) > 1e-6f;
 		}
-	Check( far > 10000 && changed == 0, fmt( "%ld pixels more than five die radii from any die: %ld channels changed", far, changed ) );
+	Check( far > 10000 && changed == 0, fmt( "%dx%d: %ld pixels more than five die radii from any die: %ld channels changed", W, H, far, changed ) );
 	rig.Set( PT_MIX, 0.0f );
 	rig.Render( 1 );
 	const Floats dry = rig.Output();
 	long differ      = 0;
 	for( size_t k = 0; k < dry.size(); ++k )
 		differ += std::fabs( dry[ k ] - card[ k ] ) > 1e-6f;
-	Check( differ == 0, fmt( "Mix 0: the output is the clip (%ld channels differ)", differ ) );
+	Check( differ == 0, fmt( "%dx%d: Mix 0, the output is the clip (%ld channels differ)", W, H, differ ) );
+	}
 	return Verdict();
 }
 
