@@ -75,8 +75,12 @@ landing within a float rounding of it).
   and wins when a composition restores both it and the index (see below).
 - **No presets, no audio trigger, no total readout** in 0.1.0. All three are
   obvious next steps; none is needed for the request.
-- **`StoatworksAbout.h` and `ATTRIBUTIONS.md` are provisional hand copies**
-  (`guide = ""`, so three About buttons), as graticule's were.
+- **`StoatworksAbout.h`, `ATTRIBUTIONS.md` and the issue forms are
+  generated** by stoatworks-backend's `sync-about.py`, `sync-attributions.py`
+  and `sync-issue-templates.py`; edit the masters there, never the copies.
+  Registering added the User guide button, so the About block is four buttons
+  (`PT_ABOUT_BUTTON_4`) and the effect's Mix sits one index later than it did
+  before the first release (nothing had shipped).
 
 ## Meeting Roll Time, honestly
 
