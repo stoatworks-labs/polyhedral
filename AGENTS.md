@@ -246,8 +246,47 @@ Assumed or chosen, not measured:
 - That Arena's FFGL clock behaves as boreal measured it (seconds or
   milliseconds, voted on against the wall clock).
 
+## The browser demo (2026-10-04)
+
+`demo/` is <https://polyhedral-demo.stoatworks-labs.com>, built to the fleet's
+`resolume-demo` kit rules by a sub-agent of the release session. Unlike every
+other demo in the fleet it **runs the plugin rather than a port of it**:
+
+- **`polyhedral-core.wasm` is the plugin's C++, unmodified**: Dice.cpp (the
+  plugin class: constructor, clock and its unit vote, Roll and Auto Roll, the
+  request, font resolution, uploads, every uniform) and everything it calls,
+  plus the FFGL SDK's CFFGLPluginManager/CFFGLPlugin, FFGLLog, FFGLShader,
+  FFGLScreenQuad and scoped bindings. Left out: SourcePlugin.cpp and
+  EffectPlugin.cpp. GL is emscripten's WebGL2 library on the page's context.
+  `-D__linux__` on the SDK files only: FFGLPlatform.h stops on any other
+  platform, and emscripten provides the <GL/glew.h> Linux asks for.
+- **The page's parts**: `demo/wasm/glue.cpp` is the host (constructs the
+  plugin, reads its declarations through the SDK's host getters -- the panel
+  is built from them -- forwards parameters, SetTime, ProcessOpenGL, and the
+  harness's own accessors for the status line). `demo/wasm/gl_shim.cpp`
+  replaces glShaderSource (the page REQUIRES the text to equal its checked
+  copy of Shaders.cpp, then applies the kit's `port()`) and
+  glEnable/glDisable/glIsEnabled (GL_PROGRAM_POINT_SIZE does not exist in
+  WebGL2). It calls `SetSynchronousForTest(true)`: no threads in this build.
+- **Checked**: `demo/tools/check_shaders.py` (verify.sh) holds shaders.js to
+  Shaders.cpp and fails when any input of the .wasm has changed since the
+  build (`demo/wasm/inputs.sha256`); both negative-controlled.
+- **Compared once with polytest** (this Mac, SwiftShader against the GPU): the
+  resting layout and Auto Roll throws of 1 and 6 d20s, 3 d100 pairs, 4 gem d4s
+  and 2 pip d6s came to rest where the harness's did, within 3/255 per pixel.
+  Two numbered d6s did not match exactly: same places, same total, but some
+  numbers turned differently on their faces.
+- **That is a plugin fact, not a page fact.** Geometry.cpp builds the cube's
+  symmetry group ORDER and slot `up` vectors, and the trapezohedron's face
+  loops, through comparisons that round differently under clang's fused
+  multiply-adds (arm64, `-ffp-contract=on` by default) than without: the
+  wasm matches a native arm64 build at `-ffp-contract=off` bit for bit (plan,
+  poses, tables), and an x86_64 build differs from both in the d10's first
+  face loop. So the universal bundle's two slices can print a d6 or d10 number
+  a different way up for the same composition. Results are unaffected.
+
 ## Not done
 
 Never loaded into Resolume; never built on Windows; no presets, no OpenFX
-port, no browser demo, no user guide. The release workflows are boreal's,
+port, no user guide. The release workflows are boreal's,
 renamed, and have never run.

@@ -28,6 +28,14 @@ on a random result — or on the **Fixed Total** you set — at exactly **Roll T
 mirrored, refracted and deepened by the blue. Rendered by the plugin's offline
 harness (`polytest`), not captured from Resolume.</sub>
 
+**[Try it in your browser](https://polyhedral-demo.stoatworks-labs.com)** — both
+plugins, with every control, running the plugin's own C++ (physics, planner,
+numbering, fonts, the plugin class itself) compiled unmodified to WebAssembly
+and its own GLSL in WebGL2. It is not the plugin in Resolume: throws are
+planned on the page's thread, there are no installed fonts (pick a font file
+instead), and the effect runs on a generated clip. Read
+[what the page itself says it does not reproduce](https://polyhedral-demo.stoatworks-labs.com).
+
 ## The one idea
 
 **A die's rotation group lets the result be chosen without touching the
@@ -116,7 +124,7 @@ It has **never been loaded into Resolume** and **never been built on
 Windows**. `oxbow probe` reads the bundles as a host does (`SW Polyhedral` / `PY01` /
 source, `SW Dice Over` / `PY02` / effect) and `oxbow selftest` renders 120
 frames through each. No GitHub repo, no tag, not on the website, no user guide,
-no browser demo, no OpenFX port, no presets. Built and measured on macOS (Apple
+no OpenFX port, no presets. Built and measured on macOS (Apple
 Silicon).
 
 What is measured, on this machine:
