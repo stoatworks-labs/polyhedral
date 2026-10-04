@@ -207,6 +207,18 @@ const char* kindName( unsigned int type )
 
 using Track = std::vector< std::pair< int, float > >;
 
+/// The whole of `text` as a number. strtof alone reads "Fixed" as 0 and says
+/// nothing, which renders a picture that looks deliberate and is wrong.
+bool parseNumber( const std::string& text, float& out )
+{
+	char* end         = nullptr;
+	const float value = std::strtof( text.c_str(), &end );
+	if( text.empty() || end != text.c_str() + text.size() )
+		return false;
+	out = value;
+	return true;
+}
+
 std::map< std::string, Track > loadScript( const std::string& path, std::string& error )
 {
 	std::map< std::string, Track > tracks;
@@ -243,7 +255,12 @@ std::map< std::string, Track > loadScript( const std::string& path, std::string&
 			return {};
 		}
 
-		const float value = std::strtof( words.back().c_str(), nullptr );
+		float value = 0.0f;
+		if( !parseNumber( words.back(), value ) )
+		{
+			error = path + ":" + std::to_string( lineNumber ) + ": '" + words.back() + "' is not a number (cues take an option's index)";
+			return {};
+		}
 		words.pop_back();
 		std::string name = words.front();
 		for( size_t i = 1; i < words.size(); ++i )
@@ -478,9 +495,33 @@ bool applySetting( DicePlugin& plugin, const std::string& assignment, std::strin
 		if( parameter.name == name )
 		{
 			if( parameter.kind == "text" || parameter.kind == "file" )
+			{
 				plugin.SetTextParameter( parameter.index, value.c_str() );
-			else
-				plugin.SetFloatParameter( parameter.index, std::strtof( value.c_str(), nullptr ) );
+				return true;
+			}
+			float number = 0.0f;
+			if( !parseNumber( value, number ) && parameter.kind == "option" )
+			{
+				//An option by its name. Every option here takes its index as its
+				//value (SetParamElementInfo in Dice.cpp).
+				for( unsigned int e = 0; e < plugin.GetNumParamElements( parameter.index ); ++e )
+				{
+					const char* const element = plugin.GetParamElementName( parameter.index, e );
+					if( element != nullptr && value == element )
+					{
+						plugin.SetFloatParameter( parameter.index, static_cast< float >( e ) );
+						return true;
+					}
+				}
+				error = "'" + value + "' is not one of " + name + "'s options";
+				return false;
+			}
+			if( !parseNumber( value, number ) )
+			{
+				error = "'" + value + "' is not a number";
+				return false;
+			}
+			plugin.SetFloatParameter( parameter.index, number );
 			return true;
 		}
 	error = "no parameter called '" + name + "'";
@@ -2235,7 +2276,8 @@ int main( int argc, char** argv )
 			             "  --size WxH        render size (default 1280x720)\n"
 			             "  --frames N        frames of 60 fps before reading back (default: one roll to rest)\n"
 			             "  --roll N          press Roll on frame N. Repeatable. (default: frame 0)\n"
-			             "  --set \"Name=V\"    set a parameter by its display name. Repeatable.\n"
+			             "  --set \"Name=V\"    set a parameter by its display name; an option by\n"
+			             "                    its index or its name. Repeatable.\n"
 			             "  --list            every parameter and its default\n"
 			             "  --pipe            raw RGBA frames in (Over) and out\n"
 			             "  --film N          N frames, raw RGBA on stdout\n"
