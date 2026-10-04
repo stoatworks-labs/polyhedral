@@ -22,13 +22,11 @@ source that throws a d4, d6, d8, d10, d12, d20 or d100 onto the table, and
 dice tumble, bounce off the edges of the frame and each other, and come to rest
 on a random result — or on the **Fixed Total** you set — at exactly **Roll Time**.
 
-![Eight throws: d4s in red marble, d6s with pips, pearl d8s, a gold metal d100 pair, stone d12s, blue gem d20s, a green wireframe d20, galaxy d10s on a wooden table](docs/hero.png)
+![A blue gem d20 at rest on 7 on green felt, its far faces' numbers showing through](docs/hero.png)
 
-<sub>Eight throws, eight textures: marble d4s, engraved pips on d6s, pearl d8s,
-a metal d100 pair in Georgia, stone d12s, gem d20s (the far faces' numbers seen
-through the near ones), a wireframe d20 with nothing behind it, galaxy d10s on
-the wooden table. Rendered by the plugin's offline harness (`polytest`), not
-captured from Resolume.</sub>
+<sub>A gem d20 come to rest on 7: the numbers on the faces beneath show through,
+mirrored, refracted and deepened by the blue. Rendered by the plugin's offline
+harness (`polytest`), not captured from Resolume.</sub>
 
 ## The one idea
 
@@ -72,6 +70,12 @@ What falls out of it:
 - **A cocked die is rerolled**, as at a table: a throw that leaves a die leaning
   on another or on a wall is thrown again. So is one that leaves dice jammed
   against the edge of the frame, for the first few tries.
+
+![Eight throws: d4s in red marble, d6s with pips, pearl d8s, a gold metal d100 pair, stone d12s, blue gem d20s, a green wireframe d20, galaxy d10s on a wooden table](docs/set.png)
+
+<sub>Eight throws, eight textures: marble d4s, engraved pips on d6s, pearl d8s,
+a metal d100 pair in Georgia, stone d12s, gem d20s, a wireframe d20 with nothing
+behind it, galaxy d10s on the wooden table. Rendered by `polytest`.</sub>
 
 ## Controls
 

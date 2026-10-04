@@ -6,10 +6,10 @@ effect that throws them over your clip. Press **Roll**: the dice come in over th
 frame, tumble, bounce off the frame's edges and each other, and come to rest on a random result
 — or on the total you set — at exactly the Roll Time you set.
 
-![Eight throws: marble d4s, d6s with pips, pearl d8s, a metal d100 pair, stone d12s, gem d20s, a wireframe d20, galaxy d10s on a wooden table](hero.png)
+![A blue gem d20 at rest on 7 on green felt, its far faces' numbers showing through](hero.png)
 
-*Eight throws, eight textures. Rendered by the plugin's offline harness, not captured from
-Resolume.*
+*A gem d20 come to rest on 7: the numbers on the faces beneath show through, mirrored.
+Rendered by the plugin's offline harness, not captured from Resolume.*
 
 > **Before you rely on this:** released at **v0.1.0**, and honestly early. What it does is
 > measured rather than asserted, by a harness that drives the real plugin classes in a headless GL
@@ -130,6 +130,11 @@ slow motion, not a longer throw. Below about half a second the throw plays faste
 ---
 
 ## The Dice group
+
+![Eight throws: marble d4s, d6s with pips, pearl d8s, a metal d100 pair, stone d12s, gem d20s, a wireframe d20, galaxy d10s on a wooden table](set.png)
+
+*Eight throws, eight textures: marble, engraved pips, pearl, metal in Georgia, stone, gem,
+wireframe, and galaxy on the wooden table.*
 
 - **Texture** — *Plastic*, *Marble* (veins of Second Colour), *Pearl* (a sheen that shifts with the
   angle), *Metal*, *Gem* (see-through: the light refracts, the colour deepens with thickness, and

@@ -581,7 +581,12 @@ void DicePlugin::BuildCamera( int width, int height )
 		c.z = mid.z + ( c.z - mid.z ) * growZ;
 	}
 	arena.ceiling = 0.6 * camera.position.y;
-	arena.middle  = { 0.0, 0.0, 0.0 };//the camera looks at the origin
+	//The camera looks at the origin, but a die's centre stands an inradius
+	//above the table, and a tilted camera sees that height as a shift up the
+	//frame. The point the dice are aimed at and centred on is the one whose
+	//die-centre lies on the frame's centre ray: an inradius cot(elevation)
+	//toward the camera.
+	arena.middle = { 0.0, 0.0, solid.inradius * std::cos( elevation ) / std::max( std::sin( elevation ), 1e-3 ) };
 	lastWidth     = width;
 	lastHeight    = height;
 }
