@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Polyhedral — browser demo | Stoatworks Labs</title>
+    <meta name="description" content="Try the Polyhedral FFGL source and effect for Resolume in your browser: polyhedral dice thrown onto a table or over a clip, landing on a random or fixed result at exactly Roll Time. The plugin's own C++ — physics, planner, numbering, fonts — compiled unmodified to WebAssembly, drawing with its own GLSL in WebGL2. A demo, not the plugin." />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./vendor/kit.css" />
+    <link rel="canonical" href="https://polyhedral-demo.stoatworks-labs.com/" />
+  </head>
+  <body>
+    <main id="demo">
+      <noscript>
+        <p>
+          This demo runs the plugin's own C++, compiled to WebAssembly, and its
+          shaders in your browser, so it needs JavaScript and WebGL2. The plugin
+          itself, its source and its downloads are on
+          <a href="https://github.com/stoatworks-labs/polyhedral">its repository</a>.
+        </p>
+      </noscript>
+    </main>
+
+    <script type="module" src="./plugin.js"></script>
+    <script
+      src="./vendor/support-footer.js"
+      defer
+      data-app="Polyhedral"
+      data-repo="https://github.com/stoatworks-labs/polyhedral"
+      data-note="A browser demo of the plugin's own C++ and shaders, compiled to WebAssembly and WebGL2. Nothing you load here leaves your machine."
+    ></script>
+  </body>
+</html>
