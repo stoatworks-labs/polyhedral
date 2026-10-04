@@ -299,14 +299,18 @@ other demo in the fleet it **runs the plugin rather than a port of it**:
   and 2 pip d6s came to rest where the harness's did, within 3/255 per pixel.
   Two numbered d6s did not match exactly: same places, same total, but some
   numbers turned differently on their faces.
-- **That is a plugin fact, not a page fact.** Geometry.cpp builds the cube's
-  symmetry group ORDER and slot `up` vectors, and the trapezohedron's face
-  loops, through comparisons that round differently under clang's fused
-  multiply-adds (arm64, `-ffp-contract=on` by default) than without: the
-  wasm matches a native arm64 build at `-ffp-contract=off` bit for bit (plan,
-  poses, tables), and an x86_64 build differs from both in the d10's first
-  face loop. So the universal bundle's two slices can print a d6 or d10 number
-  a different way up for the same composition. Results are unaffected.
+- **That was a plugin fact, not a page fact, and it is fixed.** Geometry.cpp
+  sorted each face's loop, and the d10's upper faces, by `atan2`, and a
+  square's far corner or a kite's far point lies exactly opposite the
+  reference: at +pi in one build and -pi in another, depending on fused
+  multiply-adds (arm64 clang fuses by default) and on the libm (x86_64
+  differed again in the d10). So the universal bundle's two halves, and the
+  wasm, printed a d6 or d10 number a different way up for the same
+  composition; results were never affected. `SortAngle` moves the cut just
+  past -pi, and verify.sh's "Tables across builds" builds `tools/geodump`
+  three ways (arm64 fused, arm64 `-ffp-contract=off`, x86_64) and requires
+  identical tables, with the cut put back as its negative control. Fixed
+  before v0.1.0 was tagged; the demo's wasm was rebuilt from it.
 
 ## Not done
 

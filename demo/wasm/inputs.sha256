@@ -1,7 +1,7 @@
 # demo/tools/build-wasm.sh, emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.5-git
 # FFGL SDK b1afaf9399ff4ed75ff42611ce99db68a124869b
 00fea5de573d77b8ac377ee8fba3671f87f438a7c361273c64cb1d0543c34459  source/Controls.cpp
-879b0c0aa45b7d04ba92803c6195275a55a647fef8a5968af34b83d5ff1d2169  source/Geometry.cpp
+edcab2a3253e4177bdc46d9d2204ff7711e0e2a5d58b83d8f403f43da7ab8952  source/Geometry.cpp
 7bcd87dc1891099b69b3d28946a893e9dd5c5578c83231dee2fe12943f3bb976  source/Physics.cpp
 183cf3d576b0a31619c60438070974825a0a457af190be5b80901ce10c53f0fd  source/Roll.cpp
 9946c2bf8a2e5caa28699bdcb96a34038b188af1dbf523a340c6c38ee3cd009d  source/Labels.cpp
@@ -42,4 +42,4 @@ c8ce13ef52d83ad8c5fffa7c3a5140b6cebec187107fd063ca91dad455286e05  external/ffgl/
 96323ebb4903ccb8eca34d0472472f6c57e464a0a89693ead867908984021cc6  demo/wasm/gl_shim.cpp
 b2cd8043fcd93e1ca4ce8786af80b781977ab67edcbcd4c8c3a8f0136925ed24  demo/tools/build-wasm.sh
 f891f4855a294dda90f8c2deb2f2b5e06a579205f87172d284ca5c0f9fbca7d0  demo/polyhedral-core.js
-010fd1e9614be00f981824a6071fb6118a38dc9b4b5a4307bbc7a796222c39a8  demo/polyhedral-core.wasm
+863b29bb0137657dd7887d3f49f1d89f97bb9db8eae3112c6e76683ce7a2c654  demo/polyhedral-core.wasm

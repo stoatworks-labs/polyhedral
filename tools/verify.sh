@@ -172,6 +172,34 @@ step "Offline (what CI runs)"
 echo "ok   polytest --offline"
 
 #---------------------------------------------------------------------------
+step "Tables across builds"
+#---------------------------------------------------------------------------
+# The geometry's tables must not depend on how the compiler rounds. arm64
+# clang fuses multiply-adds by default, x86_64 has a different libm, and the
+# demo's wasm neither: sorting by atan2 put a square's far corner at +pi in one
+# and -pi in another, so the halves of the universal bundle printed a d6 or d10
+# number a different way up. The negative control puts the cut back and must
+# see the builds disagree.
+geodump() { # geodump <name> <flags...>
+	local name=$1; shift
+	/usr/bin/clang++ -std=c++17 -O2 "$@" -Isource tools/geodump/main.cpp source/Geometry.cpp \
+		-o "$BUILD/geodump-$name" || fail "geodump $name did not build"
+	"$BUILD/geodump-$name" > "$BUILD/geodump-$name.txt" || fail "geodump $name did not run"
+}
+geodump fused -arch arm64
+geodump nofma -arch arm64 -ffp-contract=off
+geodump x86 -arch x86_64
+cmp -s "$BUILD/geodump-fused.txt" "$BUILD/geodump-nofma.txt" || fail "tables differ with and without fused multiply-adds"
+cmp -s "$BUILD/geodump-fused.txt" "$BUILD/geodump-x86.txt" || fail "tables differ between arm64 and x86_64"
+echo "ok   the same tables from arm64 fused, arm64 unfused and x86_64 ($(wc -l < "$BUILD/geodump-fused.txt" | tr -d ' ') lines)"
+geodump plain-fused -arch arm64 -DPOLYHEDRAL_PLAIN_ATAN2
+geodump plain-nofma -arch arm64 -ffp-contract=off -DPOLYHEDRAL_PLAIN_ATAN2
+if cmp -s "$BUILD/geodump-plain-fused.txt" "$BUILD/geodump-plain-nofma.txt"; then
+	fail "negative control: with the cut at -pi the builds should disagree, and the check cannot see it"
+fi
+echo "ok   negative control: with the cut back at -pi, the builds disagree"
+
+#---------------------------------------------------------------------------
 step "Pipe"
 #---------------------------------------------------------------------------
 # The fleet's --pipe frame format, which the video renders through. Two and a

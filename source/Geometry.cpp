@@ -10,6 +10,21 @@ namespace
 constexpr double kPhi     = 1.6180339887498948482;
 constexpr double kDensity = 1200.0;///< kg m^-3: cast resin, which most dice are
 
+/// atan2 with its cut moved just past -pi. A direction exactly opposite the
+/// reference (a square's far corner, a kite's far point, a d10 face looking
+/// down -x) lands on the cut, and which side it rounds to depends on fused
+/// multiply-adds and on the libm: arm64, x86_64 and wasm builds disagreed, and
+/// printed a d6's or d10's numbers a different way up. Moved, it sorts last.
+double SortAngle( double y, double x )
+{
+	const double a = std::atan2( y, x );
+#ifdef POLYHEDRAL_PLAIN_ATAN2
+	return a;//tools/verify.sh's negative control: the cut where it was
+#else
+	return a < -kPi + 1e-9 ? a + 2.0 * kPi : a;
+#endif
+}
+
 /// Inradius of each shape as made, metres: a real set's proportions.
 double TargetInradius( Shape shape )
 {
@@ -226,7 +241,7 @@ Solid Build( Shape shape )
 		std::sort( f.loop.begin(), f.loop.end(), [ & ]( int a, int b ) {
 			const V3 pa = s.vertices[ static_cast< size_t >( a ) ] - centre;
 			const V3 pb = s.vertices[ static_cast< size_t >( b ) ] - centre;
-			return std::atan2( Dot( pa, w ), Dot( pa, u ) ) < std::atan2( Dot( pb, w ), Dot( pb, u ) );
+			return SortAngle( Dot( pa, w ), Dot( pa, u ) ) < SortAngle( Dot( pb, w ), Dot( pb, u ) );
 		} );
 
 		//Area centroid, by the fan from the first vertex.
@@ -466,7 +481,7 @@ std::vector< int > NumberFaces( DieType die, const Solid& s )
 		std::vector< std::pair< double, size_t > > upper;
 		for( size_t f = 0; f < faces; ++f )
 			if( s.faces[ f ].normal.y > 0.0 )
-				upper.push_back( { std::atan2( s.faces[ f ].normal.z, s.faces[ f ].normal.x ), f } );
+				upper.push_back( { SortAngle( s.faces[ f ].normal.z, s.faces[ f ].normal.x ), f } );
 		std::sort( upper.begin(), upper.end() );
 		const int evens[ 5 ] = { 0, 8, 6, 4, 2 };
 		for( size_t k = 0; k < upper.size(); ++k )

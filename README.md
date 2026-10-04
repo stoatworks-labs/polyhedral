@@ -153,6 +153,7 @@ What is measured, on this machine:
 | fonts | the built-in strokes' field is the half-width on every centreline to 0.006 H; Georgia's ten digits fill 0.005–0.995 H; the name, dropdown, file and missing-font paths each resolve as described above |
 | Over | the clip is **bit-exact** more than five die radii from any die, and Mix 0 is the clip, at 320×180 and 640×360 |
 | determinism | the same seed and roll: identical keyframes, byte for byte |
+| tables | every face loop, the rotation groups' order, each number's slot and up vector and every label: **identical** from arm64 with fused multiply-adds, arm64 without, and x86_64, so both halves of the universal bundle and the browser demo print every number the same way up |
 | data | the shader's row constants and the C++ layout agree, read back through the GPU bit for bit |
 | GL state | viewport, vertex array, array buffer, program, unit, framebuffer, blend, scissor, unpack alignment, clear colour, ten texture units, both plugins |
 | negative controls | **10** deliberately wrong models, **all 10** detected |
