@@ -5,6 +5,7 @@
 #include "Labels.h"
 #include "Picture.h"
 #include "Roll.h"
+#include "Scene.h"
 #include "Typeface.h"
 
 #include <FFGLSDK.h>
@@ -21,38 +22,6 @@
 
 namespace dice
 {
-/// The data texture's rows: mirrored by the ROW_ constants in Shaders.cpp,
-/// and `ditest --data` reads them back through the GPU to prove it.
-enum DataRow : int
-{
-	ROW_PLANES  = 0,
-	ROW_VERTS   = 1,
-	ROW_EDGE_A  = 2,
-	ROW_EDGE_B  = 3,
-	ROW_SLOTS   = 4,///< five rows per numbering, two numberings
-	ROW_GLYPH   = 14,
-	ROW_CELL    = 15,
-	ROW_FACE    = 16,
-	ROW_FACE_UP = 17,
-	kDataRows   = 18,
-	kDataWidth  = 64
-};
-
-/// What the camera sees, in doubles: for the shader and for the harness's
-/// projection of a face onto pixels.
-struct Camera
-{
-	V3 position, right, up, forward;
-	double tanHalf     = 0.0;
-	double frameHeight = 0.0;///< metres of table spanned by the frame's height at the target
-	double aspect      = 16.0 / 9.0;
-
-	/// The world ray through pixel (px, py), y up from the bottom, of a w x h frame.
-	V3 Ray( double px, double py, int w, int h ) const;
-	/// The pixel a world point lands on.
-	bool Project( V3 p, int w, int h, double& px, double& py ) const;
-};
-
 /**
     The plugin: the source (dice on a table, or on nothing) and, with
     `isEffect`, the Over effect (the same, over the clip, which can also be the

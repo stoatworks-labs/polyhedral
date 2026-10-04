@@ -76,6 +76,8 @@ add_library(polyhedral_core OBJECT
     source/Picture.h
     source/Picture.cpp
     source/GLState.h
+    source/Scene.h
+    source/Scene.cpp
     source/Shaders.h
     source/Shaders.cpp
     source/Dice.h
