@@ -675,8 +675,11 @@ Plan MakeRest( const Request& r )
 		size = std::max( size, geo::GetSolid( shape ).circumradius );
 
 	const size_t n    = shapes.size();
-	const int columns = std::max( 1, std::min( static_cast< int >( n ), 6 ) );
 	const double gap  = 2.4 * size;
+	//As many to a row as the table across the frame holds.
+	const double across = std::min( Length( r.arena.corner[ 1 ] - r.arena.corner[ 0 ] ), Length( r.arena.corner[ 2 ] - r.arena.corner[ 3 ] ) );
+	const int fit       = std::max( 1, static_cast< int >( std::floor( ( across - 2.0 * size ) / gap ) ) + 1 );
+	const int columns   = std::max( 1, std::min( { static_cast< int >( n ), 6, fit } ) );
 	for( size_t i = 0; i < n; ++i )
 	{
 		Track track;

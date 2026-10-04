@@ -57,8 +57,14 @@ landing within a float rounding of it).
 - **Walls are the frame's edges** (the table footprint of the view, pulled in by
   a margin that allows for a die's height at the camera's tilt), restitution
   0.8: lively, so a throw uses the frame. Only a close-up too tight for even
-  one die has its walls moved out, and then the whole throw is translated along
-  the enlarged axes so the dice rest mid-frame.
+  one die (3.5 circumradii) has its walls moved out, and then the whole throw is
+  translated along the enlarged axes so the dice rest mid-frame.
+- **Several dice widen the view.** With more than one body the camera backs off
+  until the table in shot holds a square of ceil(sqrt(n)) of them with room to
+  land. Before this, six pointy d4s at the default Size never settled flat in
+  eight throws and fell back to the resting row (wider than the table), and
+  three d20s at a moderate Size left one out of shot. Size is therefore a
+  request for several dice; for one die it is exact.
 - **Fonts**: downpour's scan and loader, a signed-distance atlas instead of a
   bitmap (a number is seen at every size and slant), a built-in stroked face
   as the default (the same everywhere). The family name travels in Font Name

@@ -90,7 +90,8 @@ What falls out of it:
   Font File (any .ttf/.otf/.ttc), Font Name (the family, as text — see below),
   Number Size, Weight, Ink, Number Style (*Painted*, *Engraved*), Mark 6 and 9
   (*None*, *Dot*, *Underline*), D6 Faces (*Numbers*, *Pips*).
-- **Scene:** Size (the die as a fraction of the frame's height), Camera Angle
+- **Scene:** Size (the die as a fraction of the frame's height; with several
+  dice the view widens as far as it must for all of them to land in shot), Camera Angle
   (30° to straight down), Light Angle, Shadow, Table (*None* — transparent, only
   the shadows, so the layer goes over whatever is under it — *Felt*, *Wood*),
   Table Colour.
@@ -138,12 +139,13 @@ What is measured, on this machine:
 | dead controls | **43** parameters over both plugins, all live |
 
 Render cost (`ditest --bench`, mid-throw, felt table and shadows, the median
-frame on an Apple M-series GPU): one marble d20 **0.7 / 1.0 / 2.3 ms** at
-720p / 1080p / 4K; six gem d20s **2.3 / 3.5 / 10.5 ms**; six d100 pairs (twelve
-dice) **2.7 / 4.0 / 11.3 ms**. Planning a throw runs on a worker thread, so the
-roll starts a frame or two after the press: **0.5 ms** for one die, **15 ms**
-for six (worst 42), **65 ms** for twelve (worst 150), most of it rethrowing
-cocked dice.
+frame on an Apple M-series GPU, the range over two runs on a machine shared
+with other builds): one marble d20 **0.7–1.5 / 1.0–1.7 / 2.3–2.5 ms** at
+720p / 1080p / 4K; six gem d20s **1.8–2.3 / 3.5 / 8–10.5 ms**; six d100 pairs
+(twelve dice) **2.5–2.7 / 3.5–4.0 / 11.3–11.7 ms**. Planning a throw runs on a
+worker thread, so the roll starts a frame or two after the press: **0.5 ms**
+for one die, **12 ms** for six (worst 15), **28–30 ms** for twelve (worst 70),
+most of it rethrowing cocked dice.
 
 What is **not** verified, and is the honest limit of this release:
 
@@ -161,9 +163,13 @@ What is **not** verified, and is the honest limit of this release:
   measured die. The rolling damping (felt) is a constant chosen to look right.
 - **The rest is snapped.** A die the sleep test leaves under 1° off flat is
   turned flat over its last 0.15 s; more than 1° is a cocked die and a rethrow.
-- **A close-up with several dice** (Size high, Count high) can leave a die out
-  of shot after the planner's tries; the walls are moved past the frame for a
-  close-up, so they no longer hold the dice in.
+- **Size is a request, not a promise, for several dice.** A frame too tight for
+  Count of them is widened until they fit, so six dice at a close-up Size come
+  out smaller than asked. One die keeps any close-up: its walls move past the
+  frame instead and the throw is moved to rest mid-frame.
+- **Dice can cross the frame's edge mid-throw**: they come in over it, and a
+  die bouncing high toward the camera is bigger than the frame in perspective.
+  At rest every die is in shot.
 - **Edge rounding is shading only.** The outline is the sharp polyhedron; Edge
   bends the normals near an edge so the light rounds it.
 - The Gem is a single refraction to the far face and out, with the colour as

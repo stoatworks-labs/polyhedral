@@ -481,6 +481,21 @@ void DicePlugin::BuildCamera( int width, int height )
 	camera.tanHalf     = std::tan( kHalfFov * kPi / 180.0 );
 	camera.aspect      = static_cast< double >( width ) / std::max( height, 1 );
 	camera.frameHeight = nominal / SizeFromParam( params[ PT_SIZE ] );
+	//Several dice must all fit: a frame too tight for Count of them is widened
+	//until the table in shot holds a square of them with room to land. One die
+	//keeps any close-up Size asks for (its walls move out instead, below).
+	{
+		const int dice = Count() * geo::BodiesPerDie( Die() );
+		if( dice > 1 )
+		{
+			const double rise    = 2.0 * solid.circumradius * std::cos( elevation );
+			const double margin  = 0.35 * nominal + rise;
+			const double need    = solid.circumradius * ( 3.5 + 2.3 * ( std::ceil( std::sqrt( static_cast< double >( dice ) ) ) - 1.0 ) );
+			const double tallest = ( need + 2.0 * margin ) * std::sin( elevation );
+			const double widest  = ( need + 2.0 * margin ) / camera.aspect;
+			camera.frameHeight   = std::max( { camera.frameHeight, tallest, widest } );
+		}
+	}
 	const double distance = camera.frameHeight / ( 2.0 * camera.tanHalf );
 	//On the +z side looking toward -z, so screen right is world +x. The basis
 	//must be right-handed as a view (right x up = toward the viewer): the other
@@ -546,7 +561,7 @@ void DicePlugin::BuildCamera( int width, int height )
 	//Room for one die to come in off an edge and land. More dice share the
 	//frame like a tray -- walls at its edges keep every die in shot -- and
 	//only a close-up too tight for even one has its walls moved out.
-	const double needed      = thrown.circumradius * 4.7;
+	const double needed      = thrown.circumradius * 3.5;
 	(void)bodies;
 	V3 mid {};
 	for( const V3& c : arena.corner )
