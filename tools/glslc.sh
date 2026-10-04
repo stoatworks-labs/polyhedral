@@ -3,7 +3,7 @@
 # Every shader through glslc, the one shader check that needs no GL driver.
 # Called by tools/verify.sh AND by CI, so the two cannot drift: a runner with
 # no accelerated GL cannot compile a shader through a driver, and this is how
-# CI covers the shaders instead (ditest --offline covers the physics).
+# CI covers the shaders instead (polytest --offline covers the physics).
 #
 #     tools/glslc.sh          exit 0 when every shader compiles, or glslc is absent
 #     GLSLC_REQUIRED=1 tools/glslc.sh   ...and a missing glslc is a failure (CI)

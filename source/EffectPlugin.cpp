@@ -8,10 +8,10 @@
 */
 namespace
 {
-class DiceEffect : public dice::DicePlugin
+class PolyhedralEffect : public dice::DicePlugin
 {
 public:
-	DiceEffect() :
+	PolyhedralEffect() :
 		DicePlugin( true )
 	{
 	}
@@ -19,8 +19,8 @@ public:
 } // namespace
 
 static CFFGLPluginInfo PluginInfo(
-	PluginFactory< DiceEffect >,  // Create method
-	"DI02",                       // Plugin unique ID of maximum length 4
+	PluginFactory< PolyhedralEffect >,// Create method
+	"PY02",                       // Plugin unique ID of maximum length 4
 	"SW Dice Over",               // Plugin name
 	2,                            // API major version number
 	1,                            // API minor version number
@@ -29,10 +29,10 @@ static CFFGLPluginInfo PluginInfo(
 	FF_EFFECT,                    // Plugin type
 	"Polyhedral dice thrown over the clip, landing on a random result or the one you set at exactly Roll Time. "
 	"Texture: Clip puts the clip on every face. Table: None keeps the clip as the table, with the dice's shadows on it.",
-	"Dice FFGL effect"            // About
+	"Polyhedral FFGL effect"      // About
 );
 
-extern "C" const char* DiceEffectBuildStamp()
+extern "C" const char* PolyhedralEffectBuildStamp()
 {
-	return "dice " DICE_VERSION " effect, built " __DATE__ " " __TIME__;
+	return "polyhedral " POLYHEDRAL_VERSION " effect, built " __DATE__ " " __TIME__;
 }

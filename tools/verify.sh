@@ -138,8 +138,8 @@ check_bundle() {
 	fi
 }
 
-check_bundle "$BUILD/Dice.bundle" "Dice" "com.stoatworks.ffgl.dice" DI01 "SW Dice" source
-check_bundle "$BUILD/Dice Over.bundle" "Dice Over" "com.stoatworks.ffgl.dice.over" DI02 "SW Dice Over" effect
+check_bundle "$BUILD/Polyhedral.bundle" "Polyhedral" "com.stoatworks.ffgl.polyhedral" PY01 "SW Polyhedral" source
+check_bundle "$BUILD/Polyhedral Over.bundle" "Polyhedral Over" "com.stoatworks.ffgl.polyhedral.over" PY02 "SW Dice Over" effect
 
 #---------------------------------------------------------------------------
 step "Checks"
@@ -147,7 +147,7 @@ step "Checks"
 # Every claim the README makes, in the order the README makes them.
 for check in geometry symmetry labels outcome readback silhouette uniform rest duration physics \
              determinism fonts defaults names data over-check state resize; do
-	"$BUILD/ditest" --$check || fail "ditest --$check"
+	"$BUILD/polytest" --$check || fail "polytest --$check"
 done
 
 #---------------------------------------------------------------------------
@@ -155,8 +155,8 @@ step "Offline (what CI runs)"
 #---------------------------------------------------------------------------
 # The no-GL subset, exactly as CI runs it, so the selector cannot rot here
 # while CI goes on passing.
-"$BUILD/ditest" --offline >/dev/null || fail "ditest --offline"
-echo "ok   ditest --offline"
+"$BUILD/polytest" --offline >/dev/null || fail "polytest --offline"
+echo "ok   polytest --offline"
 
 #---------------------------------------------------------------------------
 step "Pipe"
@@ -170,26 +170,26 @@ frame=$(( 64 * 36 * 4 ))
 raw=$( mktemp ); cues=$( mktemp )
 head -c $(( frame * 5 / 2 )) /dev/zero > "$raw"
 out=$( mktemp ); status=0
-"$BUILD/ditest" --over --pipe --size 64x36 < "$raw" > "$out" 2>/dev/null || status=$?
+"$BUILD/polytest" --over --pipe --size 64x36 < "$raw" > "$out" 2>/dev/null || status=$?
 got=$( wc -c < "$out" | tr -d ' ' ); rm -f "$out"
 [[ "$status" -eq 0 && "$got" == "$(( frame * 2 ))" ]] \
 	|| fail "2.5 frames in gave $got bytes out (want $(( frame * 2 ))), exit $status"
 echo "ok   2.5 frames in, exactly 2 frames out, clean exit"
 # Read from a file, not a pipe: a writer killed by SIGPIPE would fail the
-# pipeline whatever ditest did, and the refusal would pass for the wrong reason.
+# pipeline whatever polytest did, and the refusal would pass for the wrong reason.
 printf '0 No Such Control 0.5\n' > "$cues"
 status=0
-"$BUILD/ditest" --over --pipe --size 64x36 --script "$cues" < "$raw" >/dev/null 2>&1 || status=$?
+"$BUILD/polytest" --over --pipe --size 64x36 --script "$cues" < "$raw" >/dev/null 2>&1 || status=$?
 [[ "$status" -eq 2 ]] || fail "a cue naming no parameter gave exit $status, not 2"
 echo "ok   a cue naming no parameter is refused (exit 2)"
 head -c $(( frame * 20 )) /dev/zero > "$raw"
 set +e
-"$BUILD/ditest" --over --pipe --size 64x36 < "$raw" 2>/dev/null | head -c 1 >/dev/null
+"$BUILD/polytest" --over --pipe --size 64x36 < "$raw" 2>/dev/null | head -c 1 >/dev/null
 status=${PIPESTATUS[0]}
 set -e
 [[ "$status" -eq 1 ]] || fail "a closed stdout gave exit $status, not 1"
 set +e
-"$BUILD/ditest" --film 20 --size 64x36 2>/dev/null | head -c 1 >/dev/null
+"$BUILD/polytest" --film 20 --size 64x36 2>/dev/null | head -c 1 >/dev/null
 status=${PIPESTATUS[0]}
 set -e
 [[ "$status" -eq 1 ]] || fail "--film into a closed stdout gave exit $status, not 1"
@@ -201,7 +201,7 @@ step "Negative controls"
 #---------------------------------------------------------------------------
 # Every check above, against a model that is deliberately wrong, required to
 # FAIL. A check that cannot fail is not a check.
-"$BUILD/ditest" --negative || fail "a negative control went undetected"
+"$BUILD/polytest" --negative || fail "a negative control went undetected"
 
 #---------------------------------------------------------------------------
 step "Mutants"
@@ -218,6 +218,6 @@ python3 tools/sweep.py --build "$(basename "$BUILD")" || fail "a dead control"
 #---------------------------------------------------------------------------
 step "Cost"
 #---------------------------------------------------------------------------
-"$BUILD/ditest" --bench
+"$BUILD/polytest" --bench
 
 printf '\n\033[32mall green\033[0m\n'

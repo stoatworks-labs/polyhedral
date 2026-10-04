@@ -1,5 +1,5 @@
 /**
-    ditest -- render Dice offline, and measure what its dice are doing.
+    polytest -- render Polyhedral offline, and measure what its dice are doing.
 
     It drives the REAL plugin class, through the same ProcessOpenGL a host
     calls, on a synthetic 60 fps clock, in a headless CGL context, with the
@@ -8,12 +8,12 @@
     outcome checks read the plan the plugin is drawing; the picture checks read
     the pixels the shipped shader drew.
 
-        ditest --out /tmp/dice.png           the source, after a roll
-        ditest --over --out /tmp/o.png       the Over effect on the harness's card
-        ditest --list                        every parameter and its default
-        ditest --film N                      N frames, raw RGBA on stdout
-        ditest --pipe                        raw frames in (Over), raw frames out
-        ditest --offline                     the checks that need no GL context (CI)
+        polytest --out /tmp/polyhedral.png           the source, after a roll
+        polytest --over --out /tmp/o.png       the Over effect on the harness's card
+        polytest --list                        every parameter and its default
+        polytest --film N                      N frames, raw RGBA on stdout
+        polytest --pipe                        raw frames in (Over), raw frames out
+        polytest --offline                     the checks that need no GL context (CI)
 
     `--script` is the fleet's cue format: `frame  Parameter Name  value` lines,
     held before the first key and after the last, linearly interpolated
@@ -356,7 +356,7 @@ struct Rig
 		viewport.height             = static_cast< FFUInt32 >( height );
 		if( plugin.InitGL( &viewport ) != FF_SUCCESS )
 		{
-			std::fprintf( stderr, "InitGL failed -- see ~/Library/Logs/dice for why\n" );
+			std::fprintf( stderr, "InitGL failed -- see ~/Library/Logs/polyhedral for why\n" );
 			return false;
 		}
 		plugin.SetClockScaleForTest( 1.0 );
@@ -1369,7 +1369,7 @@ int runNames( const Perturb& )
 				clashes += c == '/' || c == '#' || c == '*' || c == '?' || c == '[' || c == ']' || c == '{' || c == '}' || c == ',';
 		}
 		Check( longNames == 0 && clashes == 0, fmt( "%s: %u parameters, %d too long, %d clash or carry an OSC-reserved character",
-		                                            effect ? "SW Dice Over" : "SW Dice", plugin.ParamCount(), longNames, clashes ) );
+		                                            effect ? "SW Dice Over" : "SW Polyhedral", plugin.ParamCount(), longNames, clashes ) );
 	}
 	return Verdict();
 }
@@ -2198,7 +2198,7 @@ int runNegative( bool offlineOnly = false )
 //---------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
-	std::string outPath = "/tmp/dice.png";
+	std::string outPath = "/tmp/polyhedral.png";
 	std::vector< std::string > settings;
 	int width = 1280, height = 720, frames = -1;
 	std::vector< int > rolls;
@@ -2212,8 +2212,8 @@ int main( int argc, char** argv )
 		const bool hasNext         = i + 1 < argc;
 		if( argument == "--help" || argument == "-h" )
 		{
-			std::printf( "ditest -- render Dice offline and measure its dice\n\n"
-			             "  --out PATH        render and write a PNG (default /tmp/dice.png)\n"
+			std::printf( "polytest -- render Polyhedral offline and measure its dice\n\n"
+			             "  --out PATH        render and write a PNG (default /tmp/polyhedral.png)\n"
 			             "  --over            the Over effect, on the harness's card\n"
 			             "  --size WxH        render size (default 1280x720)\n"
 			             "  --frames N        frames of 60 fps before reading back (default: one roll to rest)\n"

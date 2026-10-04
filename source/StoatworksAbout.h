@@ -1,8 +1,8 @@
 /*
- * Stoatworks Labs - About window data for Dice.
+ * Stoatworks Labs - About window data for Polyhedral.
  *
  * PROVISIONAL HAND COPY, adapted from boreal's on 2026-10-04 (as graticule's
- * was): dice is not registered in the website's projects.json yet, so
+ * was): polyhedral is not registered in the website's projects.json yet, so
  * stoatworks-backend/scripts/sync-about.py has nothing to generate this from.
  * `guide` is empty because no user guide exists, which leaves three buttons.
  * The first sync after registration overwrites this file.
@@ -11,13 +11,13 @@
 
 namespace stoatworks::about
 {
-    inline constexpr auto name = "Dice";
-    inline constexpr auto slug = "dice";
+    inline constexpr auto name = "Polyhedral";
+    inline constexpr auto slug = "polyhedral";
     inline constexpr auto hook = "Polyhedral dice thrown onto the table, for Resolume";
     inline constexpr auto licence = "MIT";
     inline constexpr auto guide = "";
-    inline constexpr auto page = "https://stoatworks-labs.com/software/dice/";
-    inline constexpr auto repo = "https://github.com/stoatworks-labs/dice";
+    inline constexpr auto page = "https://stoatworks-labs.com/software/polyhedral/";
+    inline constexpr auto repo = "https://github.com/stoatworks-labs/polyhedral";
     inline constexpr auto versionFallback = "v0.1.0";
 
     inline constexpr auto org = "Stoatworks Labs";

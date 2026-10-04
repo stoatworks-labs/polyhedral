@@ -48,8 +48,8 @@ PY
 
 	printf '\n== mutant: %s\n' "$what"
 	cmake -S "$tree" -B "$tree/build" -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64 >/dev/null
-	cmake --build "$tree/build" --target ditest -j"$(sysctl -n hw.ncpu)" >/dev/null 2>&1
-	if "$tree/build/ditest" "$check" >"$WORK/log" 2>&1; then
+	cmake --build "$tree/build" --target polytest -j"$(sysctl -n hw.ncpu)" >/dev/null 2>&1
+	if "$tree/build/polytest" "$check" >"$WORK/log" 2>&1; then
 		printf '   FAIL  %s still PASSES -- the check does not cover this code\n' "$check"
 	else
 		printf '   ok    %s fails against the mutant:\n' "$check"

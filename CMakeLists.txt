@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(Dice
+project(Polyhedral
     VERSION 0.1.0
     LANGUAGES CXX
 )
@@ -34,7 +34,7 @@ if(MSVC)
     add_compile_definitions(NOMINMAX)
 endif()
 
-option(DICE_BUILD_TOOLS "Build the offline render and measurement harness" ON)
+option(POLYHEDRAL_BUILD_TOOLS "Build the offline render and measurement harness" ON)
 
 # ---------------------------------------------------------------------------
 # The Resolume FFGL SDK, as a git submodule under external/.
@@ -57,7 +57,7 @@ add_subdirectory(external/ffgl EXCLUDE_FROM_ALL)
 # translation unit -- and the result is a bundle that loads, exports plugMain,
 # and reports that it contains no plugins.
 # ---------------------------------------------------------------------------
-add_library(dice_core OBJECT
+add_library(polyhedral_core OBJECT
     source/Diag.h
     source/Diag.cpp
     source/Maths.h
@@ -82,10 +82,10 @@ add_library(dice_core OBJECT
     source/Dice.cpp
 )
 
-target_include_directories(dice_core PUBLIC source external/stb)
-target_link_libraries(dice_core PUBLIC ffgl::sdk)
-target_compile_definitions(dice_core PUBLIC DICE_VERSION="${PROJECT_VERSION}")
-set_target_properties(dice_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories(polyhedral_core PUBLIC source external/stb)
+target_link_libraries(polyhedral_core PUBLIC ffgl::sdk)
+target_compile_definitions(polyhedral_core PUBLIC POLYHEDRAL_VERSION="${PROJECT_VERSION}")
+set_target_properties(polyhedral_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # The physics runs a few thousand steps per throw on a worker; -O2 is what it is
 # measured at, whatever the build type says.
@@ -94,7 +94,7 @@ if(NOT MSVC)
 endif()
 
 find_package(Threads REQUIRED)
-target_link_libraries(dice_core PUBLIC Threads::Threads)
+target_link_libraries(polyhedral_core PUBLIC Threads::Threads)
 
 # On Windows/Linux the SDK headers we include pull in <GL/glew.h>. The SDK links
 # GLEW privately, so consumers need it too for the include path (and for the
@@ -102,7 +102,7 @@ target_link_libraries(dice_core PUBLIC Threads::Threads)
 # OpenGL framework and needs none of this.
 if(NOT APPLE)
     find_package(GLEW REQUIRED)
-    target_link_libraries(dice_core PUBLIC GLEW::GLEW)
+    target_link_libraries(polyhedral_core PUBLIC GLEW::GLEW)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -112,9 +112,9 @@ endif()
 # their own MODULE target: in the shared library they would register both
 # plugins into both bundles.
 # ---------------------------------------------------------------------------
-function(dice_add_plugin target entry bundle_name identifier)
+function(polyhedral_add_plugin target entry bundle_name identifier)
     add_library(${target} MODULE ${entry})
-    target_link_libraries(${target} PRIVATE dice_core)
+    target_link_libraries(${target} PRIVATE polyhedral_core)
 
     if(APPLE)
         set_target_properties(${target} PROPERTIES
@@ -137,10 +137,10 @@ function(dice_add_plugin target entry bundle_name identifier)
     endif()
 endfunction()
 
-dice_add_plugin(DiceSource source/SourcePlugin.cpp
-    "Dice" "com.stoatworks.ffgl.dice")
-dice_add_plugin(DiceEffect source/EffectPlugin.cpp
-    "Dice Over" "com.stoatworks.ffgl.dice.over")
+polyhedral_add_plugin(PolyhedralSource source/SourcePlugin.cpp
+    "Polyhedral" "com.stoatworks.ffgl.polyhedral")
+polyhedral_add_plugin(PolyhedralEffect source/EffectPlugin.cpp
+    "Polyhedral Over" "com.stoatworks.ffgl.polyhedral.over")
 
 # ---------------------------------------------------------------------------
 # Offline harness. Whether the number on top is the number asked for, whether
@@ -148,11 +148,11 @@ dice_add_plugin(DiceEffect source/EffectPlugin.cpp
 # measurements, not matters of taste -- so this is where the plugin is verified
 # rather than merely previewed.
 # ---------------------------------------------------------------------------
-if(DICE_BUILD_TOOLS AND APPLE)
-    add_executable(ditest tools/ditest/main.cpp)
+if(POLYHEDRAL_BUILD_TOOLS AND APPLE)
+    add_executable(polytest tools/polytest/main.cpp)
     # zlib ships with the OS, which is why the PNG writer is fifty lines here
     # rather than a vendored dependency.
-    target_link_libraries(ditest PRIVATE dice_core z
+    target_link_libraries(polytest PRIVATE polyhedral_core z
         "-framework OpenGL"
         "-framework AppKit"
     )
@@ -169,7 +169,7 @@ elseif(APPLE)
         CACHE PATH "" FORCE)
 endif()
 
-install(TARGETS DiceSource DiceEffect
+install(TARGETS PolyhedralSource PolyhedralEffect
     LIBRARY DESTINATION "."
     BUNDLE  DESTINATION "."
 )

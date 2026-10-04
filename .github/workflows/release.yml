@@ -1,8 +1,8 @@
 name: release
 
-# Build the Dice FFGL plugins for the two platforms Resolume runs on:
-#   - macOS   -> universal (arm64 + x86_64) "Dice.bundle" and "Dice Over.bundle"
-#   - Windows -> x64 "Dice.dll" and "Dice Over.dll" (GLEW static via vcpkg)
+# Build the Polyhedral FFGL plugins for the two platforms Resolume runs on:
+#   - macOS   -> universal (arm64 + x86_64) "Polyhedral.bundle" and "Polyhedral Over.bundle"
+#   - Windows -> x64 "Polyhedral.dll" and "Polyhedral Over.dll" (GLEW static via vcpkg)
 # Trigger manually (Actions > release > Run workflow) or by pushing a v* tag;
 # a workflow_dispatch run builds both platforms and skips publication, which
 # is the cheap way to prove Windows still compiles.
@@ -33,12 +33,12 @@ jobs:
         with:
           submodules: recursive
 
-      # Tools off: ditest links against zlib and CGL and is a developer
+      # Tools off: polytest links against zlib and CGL and is a developer
       # harness, not something that ships. Its checks run locally via
       # tools/verify.sh.
       - name: Configure (macOS)
         if: runner.os == 'macOS'
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DDICE_BUILD_TOOLS=OFF
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DPOLYHEDRAL_BUILD_TOOLS=OFF
 
       # GLEW comes from vcpkg, static-linked (static-md keeps the CRT dynamic
       # so the plugin matches the host) so the .dll has no external
@@ -48,7 +48,7 @@ jobs:
         run: >
           cmake -B build -A x64
           -DCMAKE_BUILD_TYPE=Release
-          -DDICE_BUILD_TOOLS=OFF
+          -DPOLYHEDRAL_BUILD_TOOLS=OFF
           -DVCPKG_TARGET_TRIPLET=x64-windows-static-md
           -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 
@@ -70,7 +70,7 @@ jobs:
         run: |
           mkdir -p out
           if [ "${{ runner.os }}" = "macOS" ]; then
-            for name in "Dice" "Dice Over"; do
+            for name in "Polyhedral" "Polyhedral Over"; do
               cp -R "build/$name.bundle" "out/$name.bundle"
               # Sanity-check each bundle really is universal and exports
               # plugMain. An arm64-only build logs as a success, and a bundle
@@ -91,8 +91,8 @@ jobs:
               esac
             done
           else
-            cp "build/Release/Dice.dll" "out/Dice.dll"
-            cp "build/Release/Dice Over.dll" "out/Dice Over.dll"
+            cp "build/Release/Polyhedral.dll" "out/Polyhedral.dll"
+            cp "build/Release/Polyhedral Over.dll" "out/Polyhedral Over.dll"
           fi
           ls -R out
 
@@ -101,9 +101,9 @@ jobs:
         run: |
           cd out
           if command -v 7z >/dev/null 2>&1; then
-            7z a "../dice-${{ matrix.name }}.zip" ./*
+            7z a "../polyhedral-${{ matrix.name }}.zip" ./*
           else
-            zip -r "../dice-${{ matrix.name }}.zip" ./*
+            zip -r "../polyhedral-${{ matrix.name }}.zip" ./*
           fi
 
       - name: Disk image (macOS)
@@ -114,17 +114,17 @@ jobs:
         # Extra Effects), so a .pkg would guess wrong for half of users.
         run: |
           source scripts/release-lib.sh
-          rl_init "Dice" dice "${{ steps.ver.outputs.version }}" \
-            com.stoatworks.dice "$GITHUB_WORKSPACE"
+          rl_init "Polyhedral" polyhedral "${{ steps.ver.outputs.version }}" \
+            com.stoatworks.polyhedral "$GITHUB_WORKSPACE"
           cp README.md out/ 2>/dev/null || true
-          rl_adhoc_sign "out/Dice.bundle"
-          rl_adhoc_sign "out/Dice Over.bundle"
+          rl_adhoc_sign "out/Polyhedral.bundle"
+          rl_adhoc_sign "out/Polyhedral Over.bundle"
           rl_dmg "${{ matrix.name }}" out
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dice-${{ matrix.name }}
+          name: polyhedral-${{ matrix.name }}
           path: |
             *.zip
             *.dmg
@@ -154,8 +154,8 @@ jobs:
           source scripts/release-lib.sh
           version="${GITHUB_REF_NAME#v}"
           case "$version" in [0-9]*) ;; *) version="0.0.0" ;; esac
-          rl_init "Dice" dice "$version" com.stoatworks.dice "$PWD/installers"
-          zip="$(find artifacts -name "dice-windows-x86_64.zip" | head -1)"
+          rl_init "Polyhedral" polyhedral "$version" com.stoatworks.polyhedral "$PWD/installers"
+          zip="$(find artifacts -name "polyhedral-windows-x86_64.zip" | head -1)"
           if [ -z "$zip" ]; then echo "no Windows artefact, nothing to do"; exit 0; fi
           stage="$RUNNER_TEMP/stage-win"
           rm -rf "$stage"; mkdir -p "$stage"
@@ -168,7 +168,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: dice-windows-installer
+          name: polyhedral-windows-installer
           path: installers/*
           if-no-files-found: warn
 

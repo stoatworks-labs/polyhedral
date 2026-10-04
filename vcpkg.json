@@ -1,7 +1,7 @@
 {
-  "name": "dice",
+  "name": "polyhedral",
   "version-string": "0.1.0",
-  "description": "Dependencies for building the dice FFGL plugins. GLEW is only needed on Windows; macOS uses the system OpenGL framework.",
+  "description": "Dependencies for building the polyhedral FFGL plugins. GLEW is only needed on Windows; macOS uses the system OpenGL framework.",
   "dependencies": [
     {
       "name": "glew",

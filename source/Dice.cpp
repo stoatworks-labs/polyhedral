@@ -250,7 +250,7 @@ FFResult DicePlugin::InitGL( const FFGLViewportStruct* vp )
 	if( !shader.Compile( vertex.c_str(), fragment.c_str() ) )
 	{
 		diag::error( "the dice shader failed to compile - the plugin will do nothing" );
-		FFGLLog::LogToHost( "Dice: shader failed to compile" );
+		FFGLLog::LogToHost( "Polyhedral: shader failed to compile" );
 		DeInitGL();
 		return FF_FAIL;
 	}

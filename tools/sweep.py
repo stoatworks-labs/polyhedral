@@ -6,7 +6,7 @@ uniform whose name does not match the C++ is silently ignored --
 `glGetUniformLocation` returns -1 and `glUniform` on -1 is a documented no-op --
 so a slider can be stone dead while everything compiles, links and renders.
 
-Each render is one throw to rest (ditest's default: Roll on frame 0, then the
+Each render is one throw to rest (polytest's default: Roll on frame 0, then the
 frames to Roll Time), so the controls that act on the THROW -- Roll Time, Throw,
 Spin, Bounce, Seed -- show up as dice resting somewhere else.
 
@@ -124,7 +124,7 @@ def render(harness, tmp, over, setting, extra, index):
     args += (["--over"] if over else []) + extra + ["--set", setting]
     result = subprocess.run(args, capture_output=True, text=True)
     if result.returncode != 0:
-        raise RuntimeError(f"ditest failed: {' '.join(args)}\n{result.stderr.strip()}")
+        raise RuntimeError(f"polytest failed: {' '.join(args)}\n{result.stderr.strip()}")
     return read_png(out)
 
 
@@ -156,9 +156,9 @@ def main():
     parser.add_argument("--jobs", type=int, default=6)
     args = parser.parse_args()
 
-    harness = REPO / args.build / "ditest"
+    harness = REPO / args.build / "polytest"
     if not harness.exists():
-        print(f"no ditest at {harness} -- build first", file=sys.stderr)
+        print(f"no polytest at {harness} -- build first", file=sys.stderr)
         return 2
 
     with tempfile.TemporaryDirectory() as fixtures:

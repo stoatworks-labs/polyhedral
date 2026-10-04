@@ -1,11 +1,11 @@
-# dice
+# polyhedral
 
 Polyhedral dice for Resolume Arena/Avenue, as two FFGL plugins from one core:
-`SW Dice` (`DI01`, source: dice on a table, or on nothing but their shadows) and
-`SW Dice Over` (`DI02`, effect: the same over the clip, which can also be the
+`SW Polyhedral` (`PY01`, source: dice on a table, or on nothing but their shadows) and
+`SW Dice Over` (`PY02`, effect: the same over the clip, which can also be the
 faces' texture). C++/GLSL, CMake MODULE → two universal `.bundle`s (macOS) +
-Windows `.dll`s (never built yet). MIT. Bundle ids `com.stoatworks.ffgl.dice` and
-`com.stoatworks.ffgl.dice.over`.
+Windows `.dll`s (never built yet). MIT. Bundle ids `com.stoatworks.ffgl.polyhedral` and
+`com.stoatworks.ffgl.polyhedral.over`.
 
 Read `AGENTS.md` before touching the planner, the physics, the symmetry choice,
 the label layout or the data texture's rows.
@@ -15,15 +15,15 @@ the label layout or the data texture's rows.
 - Fast dev build: add `-DCMAKE_OSX_ARCHITECTURES=arm64`
 - Build: `cmake --build build`
 - Install to Resolume: `cmake --install build` (never from `~/Projects`)
-- One throw to rest: `./build/ditest --out /tmp/dice.png`
-- The effect on the harness's card: `./build/ditest --over --out /tmp/o.png`
-- List parameters: `./build/ditest --list` (`--over` for the effect's)
+- One throw to rest: `./build/polytest --out /tmp/polyhedral.png`
+- The effect on the harness's card: `./build/polytest --over --out /tmp/o.png`
+- List parameters: `./build/polytest --list` (`--over` for the effect's)
 - Set anything by name, text and file parameters too:
-  `./build/ditest --set "Die=1" --set "Count=3" --set "Font Name=Georgia"`
+  `./build/polytest --set "Die=1" --set "Count=3" --set "Font Name=Georgia"`
 - Press Roll on frame N: `--roll N` (repeatable; default frame 0). `--frames N`
   renders exactly N frames instead of one throw to rest.
-- Film: `./build/ditest --film 300 --size 1280x720 --roll 10 --set "Table=1" | ffmpeg -f rawvideo -pix_fmt rgba -s 1280x720 -r 60 -i - -c:v libx264 -pix_fmt yuv420p dice.mp4`
-- A clip through the effect: `ffmpeg -i in.mov -f rawvideo -pix_fmt rgba - | ./build/ditest --over --pipe --size WxH | ffmpeg …`
+- Film: `./build/polytest --film 300 --size 1280x720 --roll 10 --set "Table=1" | ffmpeg -f rawvideo -pix_fmt rgba -s 1280x720 -r 60 -i - -c:v libx264 -pix_fmt yuv420p dice.mp4`
+- A clip through the effect: `ffmpeg -i in.mov -f rawvideo -pix_fmt rgba - | ./build/polytest --over --pipe --size WxH | ffmpeg …`
   A cue line is `frame  Parameter Name  value` (`#` starts a comment), in the same
   units as `--set`. Values interpolate linearly between a name's cues and hold
   before the first and after the last, so a step needs two cues a frame apart and
@@ -31,7 +31,7 @@ the label layout or the data texture's rows.
   name exits 2 before any frame; a partial frame at EOF ends the stream with exit
   0; a reader that hangs up ends `--pipe`/`--film` with exit 1 (SIGPIPE is
   ignored), never a silent 141.
-- Debug a readback: `DITEST_DUMP=/tmp/d.png DITEST_DUMP_WANT=17 ./build/ditest --readback`
+- Debug a readback: `DITEST_DUMP=/tmp/d.png DITEST_DUMP_WANT=17 ./build/polytest --readback`
   writes the slot's pixels as red = ink seen, green = the wanted number, blue =
   the rival it disputes worst.
 
@@ -80,12 +80,12 @@ the label layout or the data texture's rows.
 - Option parameters arrive as the element's value; `OptionIndex()` clamps.
 - Override `SetTextParameter` to return FF_SUCCESS for the About block, or no
   host can instantiate the plugin.
-- `dice_core` is an OBJECT library: the registrations are file-scope
+- `polyhedral_core` is an OBJECT library: the registrations are file-scope
   constructors nothing references.
 - Randomness is PCG integer hashing, never `fract(sin(...))`; draws are
   Lemire's unbiased multiply-shift.
 - Local repo only: no GitHub remote, no tag, not registered on the website.
-  The workflows assume the fleet's public `stoatworks-labs/dice`.
+  The workflows assume the fleet's public `stoatworks-labs/polyhedral`.
 
 ## Not done yet
 - Never loaded into Resolume. Never built on Windows. No OpenFX port, no
@@ -100,4 +100,4 @@ compile, the font in use (and a named font that is not installed), a Texture
 File that will not load, and every roll: results, throws (cocked, unsettled),
 natural time, warp, planning ms.
 
-    ~/Library/Logs/dice/dice.YYYY-MM-DD.log
+    ~/Library/Logs/polyhedral/polyhedral.YYYY-MM-DD.log

@@ -1,10 +1,10 @@
 # Attributions
 
-Dice is built on other people's work. This file lists what that work is, who did
+Polyhedral is built on other people's work. This file lists what that work is, who did
 it, and what it is doing here.
 
 It is meant to be generated — the master lists live in the `stoatworks-backend` repo
-and are pushed out by `scripts/sync-attributions.py`. Dice is not registered there
+and are pushed out by `scripts/sync-attributions.py`. Polyhedral is not registered there
 yet, so this is a provisional hand copy; the first sync after registration replaces it.
 
 ## Third-party code this project uses

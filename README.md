@@ -1,22 +1,22 @@
-# dice
+# polyhedral
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
 > (Anthropic), directed and reviewed by a human author. It has **never been
 > loaded into Resolume**, on any platform, and it has never been built on
 > Windows (see [Status](#status)). Everything below is measured by an offline
 > harness that drives the real plugin classes in a headless GL context.
-> `ditest --outcome` throws every value of every die, two hundred and twenty
+> `polytest --outcome` throws every value of every die, two hundred and twenty
 > throws, and at rest the top face carries the value asked for every time;
 > `--readback` then reads the number on top **out of the rendered pixels**, in the
 > built-in face and in Georgia, and the wanted number beats every other number
 > that die carries. `--silhouette` shows that turning a die by the symmetry that
 > sets its result moves **at most one pixel** of its outline. `--duration` stops
 > the last die at exactly Roll Time from 0.5 to 8 s, still moving a frame before.
-> `ditest --negative` re-runs ten checks against deliberately wrong models, and
+> `polytest --negative` re-runs ten checks against deliberately wrong models, and
 > `tools/mutate.sh` changes one character of the shipped shader and C++; every one
 > is caught. A control sweep fails if any parameter does nothing.
 
-Polyhedral dice for Resolume Arena/Avenue, as two FFGL plugins: **SW Dice**, a
+Polyhedral dice for Resolume Arena/Avenue, as two FFGL plugins: **SW Polyhedral**, a
 source that throws a d4, d6, d8, d10, d12, d20 or d100 onto the table, and
 **SW Dice Over**, an effect that throws them over your clip. Press **Roll**; the
 dice tumble, bounce off the edges of the frame and each other, and come to rest
@@ -27,7 +27,7 @@ on a random result — or on the **Fixed Total** you set — at exactly **Roll T
 <sub>Eight throws, eight textures: marble d4s, engraved pips on d6s, pearl d8s,
 a metal d100 pair in Georgia, stone d12s, gem d20s (the far faces' numbers seen
 through the near ones), a wireframe d20 with nothing behind it, galaxy d10s on
-the wooden table. Rendered by the plugin's offline harness (`ditest`), not
+the wooden table. Rendered by the plugin's offline harness (`polytest`), not
 captured from Resolume.</sub>
 
 ## The one idea
@@ -109,8 +109,8 @@ the composition finds it again on a machine that has it.
 **v0.1.0, 2026-10-04, local, unreleased, and honestly early.**
 
 It has **never been loaded into Resolume** and **never been built on
-Windows**. `oxbow probe` reads the bundles as a host does (`SW Dice` / `DI01` /
-source, `SW Dice Over` / `DI02` / effect) and `oxbow selftest` renders 120
+Windows**. `oxbow probe` reads the bundles as a host does (`SW Polyhedral` / `PY01` /
+source, `SW Dice Over` / `PY02` / effect) and `oxbow selftest` renders 120
 frames through each. No GitHub repo, no tag, not on the website, no user guide,
 no browser demo, no OpenFX port, no presets. Built and measured on macOS (Apple
 Silicon).
@@ -138,7 +138,7 @@ What is measured, on this machine:
 | mutants | **6** one-character changes (two GLSL, four C++), **all 6** caught |
 | dead controls | **43** parameters over both plugins, all live |
 
-Render cost (`ditest --bench`, mid-throw, felt table and shadows, the median
+Render cost (`polytest --bench`, mid-throw, felt table and shadows, the median
 frame on an Apple M-series GPU, the range over two runs on a machine shared
 with other builds): one marble d20 **0.7–1.5 / 1.0–1.7 / 2.3–2.5 ms** at
 720p / 1080p / 4K; six gem d20s **1.8–2.3 / 3.5 / 8–10.5 ms**; six d100 pairs
@@ -182,7 +182,7 @@ What is **not** verified, and is the honest limit of this release:
 C++17 + GLSL 4.10, CMake, FFGL 2.1 (SDK vendored as a submodule). macOS builds
 are universal (arm64 + x86_64); Windows needs GLEW via vcpkg.
 
-    git clone --recursive https://github.com/stoatworks-labs/dice
+    git clone --recursive https://github.com/stoatworks-labs/polyhedral
     cmake -B build -DCMAKE_BUILD_TYPE=Release
     cmake --build build
     cmake --install build          # both bundles into Resolume's Extra Effects
@@ -192,32 +192,32 @@ are universal (arm64 + x86_64); Windows needs GLEW via vcpkg.
 The offline harness renders the real plugin classes headlessly, planning each
 throw on the render thread so every run is the same run:
 
-    ./build/ditest --out /tmp/dice.png                    one throw to rest
-    ./build/ditest --over --out /tmp/over.png             the effect, on a card
-    ./build/ditest --set "Die=1" --set "Count=3" --set "Result=1" --set "Fixed Total=12"
-    ./build/ditest --geometry       the solids against a Monte Carlo of their planes
-    ./build/ditest --symmetry       the rotation groups, and every S a throw uses
-    ./build/ditest --labels         a real set's numbering
-    ./build/ditest --outcome        every value of every die, Fixed totals, Random
-    ./build/ditest --readback       the number on top, read out of the pixels
-    ./build/ditest --silhouette     R and R S cover the same pixels
-    ./build/ditest --uniform        chi-square of Random's draws
-    ./build/ditest --rest           flat, still, inside, apart
-    ./build/ditest --duration       the last die stops at Roll Time
-    ./build/ditest --physics        parabola, energy, restitution
-    ./build/ditest --determinism --fonts --defaults --names --data
-    ./build/ditest --over-check --state --resize
-    ./build/ditest --negative       every check above against a wrong model
-    ./build/ditest --offline        the no-GL subset and its negative controls (what CI runs)
+    ./build/polytest --out /tmp/dice.png                    one throw to rest
+    ./build/polytest --over --out /tmp/over.png             the effect, on a card
+    ./build/polytest --set "Die=1" --set "Count=3" --set "Result=1" --set "Fixed Total=12"
+    ./build/polytest --geometry       the solids against a Monte Carlo of their planes
+    ./build/polytest --symmetry       the rotation groups, and every S a throw uses
+    ./build/polytest --labels         a real set's numbering
+    ./build/polytest --outcome        every value of every die, Fixed totals, Random
+    ./build/polytest --readback       the number on top, read out of the pixels
+    ./build/polytest --silhouette     R and R S cover the same pixels
+    ./build/polytest --uniform        chi-square of Random's draws
+    ./build/polytest --rest           flat, still, inside, apart
+    ./build/polytest --duration       the last die stops at Roll Time
+    ./build/polytest --physics        parabola, energy, restitution
+    ./build/polytest --determinism --fonts --defaults --names --data
+    ./build/polytest --over-check --state --resize
+    ./build/polytest --negative       every check above against a wrong model
+    ./build/polytest --offline        the no-GL subset and its negative controls (what CI runs)
     tools/mutate.sh                 one character changed, a check must fail
     python3 tools/sweep.py          no control is silently dead
-    ./build/ditest --bench          720p through 4K, and the planner's cost
+    ./build/polytest --bench          720p through 4K, and the planner's cost
     tools/verify.sh                 all of it, in about a minute and a half
 
 Filming uses the fleet's frame format and cue sheets (a press of Roll is three
 cues, 0 1 0, or `--roll N`):
 
-    ./build/ditest --film 300 --size 1280x720 --roll 10 --set "Table=1" \
+    ./build/polytest --film 300 --size 1280x720 --roll 10 --set "Table=1" \
       | ffmpeg -f rawvideo -pix_fmt rgba -s 1280x720 -r 60 -i - dice.mp4
 
 <!-- attributions:start -->

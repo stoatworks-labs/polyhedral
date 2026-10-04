@@ -13,7 +13,7 @@ namespace dice::diag
 {
 namespace
 {
-constexpr const char* kAppName = "dice";
+constexpr const char* kAppName = "polyhedral";
 
 std::mutex g_mutex;
 std::string g_path;
@@ -40,7 +40,7 @@ std::string homeDirectory()
 /// Same locations the rest of the fleet uses, so one folder holds everything.
 std::string logDirectory()
 {
-	const std::string override_ = environmentVariable( "DICE_LOG_DIR" );
+	const std::string override_ = environmentVariable( "POLYHEDRAL_LOG_DIR" );
 	if( !override_.empty() )
 		return override_;
 

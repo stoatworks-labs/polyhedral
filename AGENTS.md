@@ -1,4 +1,4 @@
-# AGENTS.md — dice
+# AGENTS.md — polyhedral
 
 The why. `CLAUDE.md` is the command reference; `README.md` is for people who
 will use the plugin. This file is for whoever changes it next.
@@ -41,14 +41,18 @@ landing within a float rounding of it).
     Picture.*     the Texture File through stb_image
     Shaders.*     one fragment pass: ray/polytope slabs, numbers, materials
     Dice.*        the plugin: parameters, clock, camera + arena, uploads, draw
-    tools/ditest  the harness
+    tools/polytest  the harness
 
 ## Decisions
 
-- **Name and ids**: `SW Dice` / `DI01` (source), `SW Dice Over` / `DI02`
-  (effect); repo `dice`. Plain on purpose: Resolume's browser is searched by
-  name and a VJ looking for dice types "dice". No fleet id collides (checked
-  against every `CFFGLPluginInfo` in `~/Projects/resolume`).
+- **Name and ids** (Allan's, 2026-10-04): the project is **polyhedral**;
+  the source is `SW Polyhedral` / `PY01`, the effect `SW Dice Over` / `PY02`,
+  because "SW Polyhedral Over" is 18 characters and FFGL names stop at 16. The
+  two names cover both searches in Resolume's browser ("polyhedral", "dice").
+  Bundles are `Polyhedral.bundle` and `Polyhedral Over.bundle`. It was built as
+  "dice" (`DI01`/`DI02`) and renamed before its first release. No fleet id
+  collides (checked against every `CFFGLPluginInfo` in `~/Projects/resolume`).
+  The C++ namespace stays `dice`: it names the domain, not the product.
 - **A source and an effect.** The effect exists for two things the source
   cannot do: the dice over the clip in one layer, and **Texture: Clip**, the
   clip on every face. Its Texture list has one more element than the source's.
@@ -178,7 +182,7 @@ default size never did, so every roll used all eight throws (34 ms, 90 ms for
 twelve). The rule is now the visible rectangle, and several dice share the
 frame like a tray instead of enlarging it.
 
-**zsh does not split words.** `./ditest $ARGS` in the Bash tool passes one
+**zsh does not split words.** `./polytest $ARGS` in the Bash tool passes one
 argument; the harness then read argv[2] as NULL and crashed. Scripts that build
 argument lists go in a bash file.
 
