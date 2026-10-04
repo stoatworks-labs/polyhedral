@@ -19,6 +19,8 @@ constexpr double kSpeedLow     = 0.3;///< m/s
 constexpr double kSpeedHigh    = 2.0;///< harder looks violent at this scale: a frame width in 0.1 s
 constexpr double kWarpLow      = 0.85;///< accept a throw this close to Roll Time at once
 constexpr double kWarpHigh     = 1.18;
+constexpr int kClearTrials     = 4;   ///< throws spent looking for dice that rest clear of the frame's edges...
+constexpr int kClearTrialsMany = 2;   ///< ...with more than three: each throw costs more and clears less often
 
 /// A stream of 32-bit draws from one seed, for one purpose.
 struct Stream
@@ -49,12 +51,11 @@ Quat RandomRotation( Stream& s )
 	                         b * std::cos( 2 * kPi * u3 ) } );
 }
 
+/// Where the dice are aimed and laid out: the table point at the middle of the
+/// frame. Not the footprint's centroid, which a tilted camera puts above it.
 V3 Centre( const Arena& arena )
 {
-	V3 c {};
-	for( const V3& p : arena.corner )
-		c += p;
-	return c * 0.25;
+	return arena.middle;
 }
 
 /// The throw speed a first attempt uses for a wanted natural duration: fitted
@@ -216,7 +217,15 @@ struct Attempt
 {
 	std::vector< Track > tracks;
 	double natural  = 0.0;
-	double spread   = 0.0;///< m: furthest a resting die's edge is from the dice's centroid
+	double overflow = 0.0;///< m: how far the resting dice, centred on the frame, reach past it
+	double cramped  = 0.0;///< how far inside half a die's reach of a wall the worst-placed die rests, in circumradii
+	enum Reason
+	{
+		None,
+		Unsettled,  ///< still moving after kMaxSim
+		Cocked,     ///< resting against a wall or another die, or on top of one
+		Overlapping ///< flat, but into a neighbour
+	} rejected = None;
 	bool valid      = false;
 	bool cancelled  = false;
 	physics::Stats stats;
@@ -269,7 +278,10 @@ Attempt Simulate( const Request& r, const std::vector< geo::Shape >& shapes, Thr
 	out.stats = world.stats;
 
 	if( !world.AllAsleep() )
+	{
+		out.rejected = Attempt::Unsettled;
 		return out;
+	}
 
 	//-------------------------------------------------------------------
 	// Every die flat on the table, or the throw is no good.
@@ -283,7 +295,10 @@ Attempt Simulate( const Request& r, const std::vector< geo::Shape >& shapes, Thr
 		const int bottom          = BottomFace( *body.solid, body.Rotation(), offFlat );
 		(void)bottom;
 		if( offFlat > kCockedDeg || LowestVertex( body ) > kOnTable )
+		{
+			out.rejected = Attempt::Cocked;
 			return out;
+		}
 		//Settled on a key: the first keyframe that holds the final pose. A
 		//settle time between keys would leave the last few playback frames
 		//interpolating between two copies of the final pose -- still, but
@@ -330,7 +345,10 @@ Attempt Simulate( const Request& r, const std::vector< geo::Shape >& shapes, Thr
 	for( size_t i = 0; i < n; ++i )
 		for( size_t j = i + 1; j < n; ++j )
 			if( Overlap( *world.bodies[ i ].solid, finals[ i ], *world.bodies[ j ].solid, finals[ j ] ) > kOverlap )
+			{
+				out.rejected = Attempt::Overlapping;
 				return out;
+			}
 	for( size_t i = 0; i < n; ++i )
 	{
 		const Pose final = finals[ i ];
@@ -352,14 +370,29 @@ Attempt Simulate( const Request& r, const std::vector< geo::Shape >& shapes, Thr
 			}
 		}
 	}
+	//How far past the frame the dice would reach once a close-up has moved
+	//their centroid to its middle (only an enlarged axis moves).
 	V3 centroid {};
 	for( const Pose& f : finals )
 		centroid += f.x * ( 1.0 / static_cast< double >( n ) );
+	if( !r.arena.enlargedX )
+		centroid.x = r.arena.middle.x;
+	if( !r.arena.enlargedZ )
+		centroid.z = r.arena.middle.z;
 	for( size_t i = 0; i < n; ++i )
 	{
-		V3 d = finals[ i ].x - centroid;
-		d.y  = 0.0;
-		out.spread = std::max( out.spread, Length( d ) + world.bodies[ i ].solid->circumradius );
+		const double reach = world.bodies[ i ].solid->circumradius;
+		out.overflow = std::max( { out.overflow, std::fabs( finals[ i ].x.x - centroid.x ) + reach - r.arena.viewX,
+		                           std::fabs( finals[ i ].x.z - centroid.z ) + reach - r.arena.viewZ } );
+		//Lively walls throw dice into the corners. A die resting with its
+		//centre less than 1.5 reaches from a wall that is the frame's edge
+		//is cut by it, or nearly: how far short of that, in reaches.
+		if( !r.arena.enlarged )
+			for( size_t w = 1; w < world.planes.size(); ++w )
+			{
+				const double gap = Dot( world.planes[ w ].normal, finals[ i ].x ) - world.planes[ w ].offset;
+				out.cramped      = std::max( out.cramped, ( 1.5 * reach - gap ) / reach );
+			}
 	}
 	out.valid = true;
 	return out;
@@ -519,7 +552,7 @@ Plan MakePlan( const Request& r, const std::atomic< bool >* cancel )
 	//In a close-up (walls beyond the frame) the dice must also come to rest
 	//close enough together to be in shot: a throw that fits beats one that
 	//does not, whatever its timing; among those that do not, the tightest.
-	const double room = r.arena.enlarged && r.arena.view > 0.0 ? 0.45 * r.arena.view : 1e30;
+	const bool framed = r.arena.enlarged && r.arena.viewX > 0.0 && r.arena.viewZ > 0.0;
 	for( int trial = 0; trial < kMaxTrials; ++trial )
 	{
 		++plan.trials;
@@ -527,10 +560,19 @@ Plan MakePlan( const Request& r, const std::atomic< bool >* cancel )
 		Attempt attempt    = Simulate( r, shapes, from, speed, sub, cancel );
 		if( attempt.cancelled )
 			return Plan {};
+		if( attempt.rejected == Attempt::Cocked )
+			++plan.cocked;
+		else if( attempt.rejected != Attempt::None )
+			++plan.unsettled;
 		if( attempt.valid && attempt.natural > 0.05 )
 		{
-			const bool fits    = attempt.spread <= room;
-			const double error = std::fabs( std::log( attempt.natural / plan.duration ) ) + ( fits ? 0.0 : 1000.0 + attempt.spread );
+			//What makes a throw better, in order: the dice in shot (a
+			//close-up); then -- for the first few throws only, it costs a
+			//throw each -- resting clear of the frame's edges; then timing.
+			const bool fits    = !framed || attempt.overflow <= 0.0;
+			const bool clear   = attempt.cramped <= 0.0 || trial >= ( shapes.size() > 3 ? kClearTrialsMany : kClearTrials );
+			const double error = std::fabs( std::log( attempt.natural / plan.duration ) ) + ( fits ? 0.0 : 1000.0 + attempt.overflow )
+			                   + std::max( attempt.cramped, 0.0 );
 			if( error < bestError )
 			{
 				bestError  = error;
@@ -538,10 +580,15 @@ Plan MakePlan( const Request& r, const std::atomic< bool >* cancel )
 				plan.speed = speed;
 			}
 			const double warp = attempt.natural / plan.duration;
-			if( fits && warp > kWarpLow && warp < kWarpHigh )
+			if( fits && clear && warp > kWarpLow && warp < kWarpHigh )
 				break;
 			if( !fits )
 				continue;
+			if( !clear )
+			{
+				//A new sub-seed at the same speed: the timing was not the problem.
+				continue;
+			}
 			//Already throwing as hard (or as soft) as it will: another throw
 			//cannot get closer, only luckier.
 			if( ( warp < 1.0 && speed >= kSpeedHigh ) || ( warp > 1.0 && speed <= kSpeedLow ) )
@@ -589,10 +636,12 @@ Plan MakePlan( const Request& r, const std::atomic< bool >* cancel )
 	else
 	{
 		//rate( t ) = c ( 1 - k t / R ): the mean is c ( 1 - k / 2 ), which must
-		//be the warp. k grows as the throw falls short of Roll Time, so a
-		//near-miss plays at real speed throughout and a long Roll Time starts
-		//near real speed and slows into the reveal.
-		const double k = std::clamp( 2.0 * ( 1.0 - plan.warp ), 0.0, 0.75 );
+		//be the warp. k grows as the throw falls short of Roll Time but stops
+		//at 0.35: a throw is fast motion until nearly its end (the settling
+		//tail is a tenth of it), so slowing the end hard only freezes the last
+		//tumbles -- tried, and the dice sat still for a second. Gentle, the
+		//reveal lingers without stopping.
+		const double k = std::clamp( 0.5 * ( 1.0 - plan.warp ), 0.0, 0.35 );
 		plan.rateStart = plan.warp / ( 1.0 - 0.5 * k );
 		plan.rateEnd   = plan.rateStart * ( 1.0 - k );
 	}

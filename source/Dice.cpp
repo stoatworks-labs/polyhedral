@@ -97,7 +97,7 @@ DicePlugin::DicePlugin( bool effect ) : isEffect( effect )
 	//-------------------------------------------------------------------
 	params[ PT_DIE ]          = static_cast< float >( geo::DieType::D20 );
 	params[ PT_COUNT ]        = 1.0f;
-	params[ PT_ROLL_TIME ]    = ParamFromRollTime( 2.0 );
+	params[ PT_ROLL_TIME ]    = ParamFromRollTime( 1.2 );
 	params[ PT_RESULT ]       = static_cast< float >( Result::Random );
 	params[ PT_FIXED_TOTAL ]  = 20.0f;
 	params[ PT_SEED ]         = 0.0f;
@@ -511,10 +511,14 @@ void DicePlugin::BuildCamera( int width, int height )
 		corner[ i ] = hit;
 	}
 
-	//Pull each edge in by the margin and intersect neighbours. The margin
+	//Pull each edge in by the margin and intersect neighbours: a third of a
+	//die, plus how far a die's top can stand out past its footprint in the
+	//picture (its height, foreshortened by the camera's tilt -- a d4's apex at
+	//the far wall is otherwise cut by the top of the frame). The margin
 	//shrinks if the footprint is small, so there is always room for a die.
-	double width0 = std::min( Length( corner[ 1 ] - corner[ 0 ] ), Length( corner[ 2 ] - corner[ 1 ] ) );
-	const double margin = std::min( 0.35 * nominal, 0.2 * width0 );
+	const double width0 = std::min( Length( corner[ 1 ] - corner[ 0 ] ), Length( corner[ 2 ] - corner[ 1 ] ) );
+	const double rise   = 2.0 * solid.circumradius * std::cos( elevation );
+	const double margin = std::min( 0.35 * nominal + rise, 0.2 * width0 );
 	V3 centre {};
 	for( const V3& c : corner )
 		centre += c * 0.25;
@@ -539,8 +543,11 @@ void DicePlugin::BuildCamera( int width, int height )
 	//the whole throw so the dice come to rest in the middle of the frame.
 	const geo::Solid& thrown = geo::GetSolid( geo::ShapeOf( Die() ) );
 	const int bodies         = Count() * geo::BodiesPerDie( Die() );
-	//Room to come in off an edge (a die and a bit) and a row of dice to rest.
-	const double needed      = thrown.circumradius * ( 2.3 * std::ceil( std::sqrt( static_cast< double >( bodies ) ) ) + 2.4 );
+	//Room for one die to come in off an edge and land. More dice share the
+	//frame like a tray -- walls at its edges keep every die in shot -- and
+	//only a close-up too tight for even one has its walls moved out.
+	const double needed      = thrown.circumradius * 4.7;
+	(void)bodies;
 	V3 mid {};
 	for( const V3& c : arena.corner )
 		mid += c * 0.25;
@@ -551,13 +558,15 @@ void DicePlugin::BuildCamera( int width, int height )
 	arena.enlargedX    = growX > 1.0;
 	arena.enlargedZ    = growZ > 1.0;
 	arena.enlarged     = arena.enlargedX || arena.enlargedZ;
-	arena.view         = std::min( across, deep );
+	arena.viewX        = 0.5 * across;
+	arena.viewZ        = 0.5 * deep;
 	for( V3& c : arena.corner )
 	{
 		c.x = mid.x + ( c.x - mid.x ) * growX;
 		c.z = mid.z + ( c.z - mid.z ) * growZ;
 	}
 	arena.ceiling = 0.6 * camera.position.y;
+	arena.middle  = { 0.0, 0.0, 0.0 };//the camera looks at the origin
 	lastWidth     = width;
 	lastHeight    = height;
 }

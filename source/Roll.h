@@ -26,12 +26,12 @@
     the dice stop EXACTLY at Roll Time.
 
     Real dice settle fast: a 20 mm die thrown across a frame-sized table is
-    still in 0.4 to 1.1 s however hard it is thrown (most of the energy goes
-    in the first few impacts). So a Roll Time longer than that is played slower
-    than real time, and the slowing is put where it reads as suspense rather
-    than as slow motion: playback starts at real speed where it can and
-    decelerates linearly, so the last tumbles before the reveal are the slowest
-    (`SimTime()`). A Roll Time shorter than the throw plays it uniformly fast.
+    still in 0.3 to 0.7 s however hard it is thrown (most of the energy goes
+    in the first few impacts, and it is fast motion until nine tenths of the
+    way). So a Roll Time longer than that is played slower than real time --
+    slow motion, which is how a tabletop close-up is filmed anyway -- easing a
+    little further toward the end, so the reveal lingers (`SimTime()`). A Roll
+    Time shorter than the throw plays it uniformly fast.
     `Plan::warp` is the average rate, simulated seconds per second.
 
     ## Rejected throws
@@ -65,7 +65,9 @@ struct Arena
 	/// dice come to rest round the arena's centre, which is the frame's.
 	bool enlarged = false;
 	bool enlargedX = false, enlargedZ = false;///< which way: the throw moves only along those
-	double view   = 0.0;///< m: the frame's narrower footprint, before any enlarging
+	double viewX  = 0.0;///< m: half the frame's footprint across (the narrower end of it), before any enlarging
+	double viewZ  = 0.0;///< m: half its depth
+	V3 middle;          ///< the table point at the middle of the frame
 };
 
 struct Request
@@ -123,6 +125,8 @@ struct Plan
 	double rateStart = 1.0;    ///< sim seconds per playback second at release
 	double rateEnd   = 1.0;    ///< ... and at rest
 	int trials       = 0;
+	int cocked       = 0;      ///< throws rejected for a die resting on something (rerolled, as at a table)
+	int unsettled    = 0;      ///< ... for dice still moving, or ending into each other
 	bool settled     = false;  ///< every die came to rest flat on the table
 	bool idle        = false;  ///< a resting layout, not a throw
 	double speed     = 0.0;    ///< m/s, the throw that was kept

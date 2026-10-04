@@ -780,7 +780,8 @@ void main()
 		vec3 oc  = CamPos - Pos[ i ];
 		float b  = dot( oc, centre );
 		float d2 = dot( oc, oc ) - b * b;
-		float R  = Circumradius + 3.0 * LineWidth + 2.0 * PixelAngle * max( -b, 0.0 );
+		float glow = Material == TEX_WIRE ? 3.0 * LineWidth : 0.0;
+		float R    = Circumradius + glow + 2.0 * PixelAngle * max( -b, 0.0 );
 		if( d2 < R * R )
 			near_ = true;
 	}

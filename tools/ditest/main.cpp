@@ -918,6 +918,29 @@ int runOutcome( const Perturb& perturb )
 		                        geo::DieName( die ), plans, wrong, idle ) );
 	}
 
+	std::printf( "\n  Random: every throw shows what was drawn, and the draw is a face the die has\n" );
+	for( geo::DieType die : kAllDice )
+	{
+		int wrong = 0, outOfRange = 0, plans = 0;
+		for( uint32_t roll = 1; roll <= 12; ++roll )
+		{
+			roll::Request r = baseRequest( die, 2 );
+			applyPerturb( r, perturb );
+			r.seed = 21;
+			r.roll = roll;
+			const roll::Plan plan = roll::MakePlan( r );
+			++plans;
+			for( int d = 0; d < 2; ++d )
+			{
+				const int drawn = plan.results[ static_cast< size_t >( d ) ];
+				outOfRange += drawn < 1 || drawn > geo::Sides( die );
+				wrong += shownValue( plan, die, d ) != drawn;
+			}
+		}
+		Check( wrong == 0 && outOfRange == 0, fmt( "%-4s %d throws of two: %d dice showed something other than their draw, %d draws "
+		                                            "outside 1..%d", geo::DieName( die ), plans, wrong, outOfRange, geo::Sides( die ) ) );
+	}
+
 	std::printf( "\n  totals over several dice: the dice's top values add up to the Fixed Total\n" );
 	for( geo::DieType die : kAllDice )
 	{
@@ -1309,7 +1332,7 @@ int runDefaults( const Perturb& perturb )
 	const geo::DieType want = perturb.defaultsShifted ? geo::DieType::D6 : geo::DieType::D20;
 	Check( plugin.Die() == want, fmt( "the die is a %s", geo::DieName( want ) ) );
 	Check( plugin.Count() == 1, "one of it" );
-	Check( std::fabs( RollTimeFromParam( plugin.GetFloatParameter( PT_ROLL_TIME ) ) - 2.0 ) < 1e-5, "Roll Time 2.0 s" );
+	Check( std::fabs( RollTimeFromParam( plugin.GetFloatParameter( PT_ROLL_TIME ) ) - 1.2 ) < 1e-5, "Roll Time 1.2 s" );
 	Check( std::fabs( BounceFromParam( plugin.GetFloatParameter( PT_BOUNCE ) ) - 0.5 ) < 1e-6, "Bounce e = 0.5" );
 	Check( std::fabs( SizeFromParam( plugin.GetFloatParameter( PT_SIZE ) ) - 0.22 ) < 1e-6, "Size 0.22 of the frame" );
 	Check( OptionIndex( plugin.GetFloatParameter( PT_RESULT ), 2 ) == 0, "Result Random" );
