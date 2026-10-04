@@ -175,6 +175,7 @@ private:
 	bool synchronous        = false;
 	bool laidOut            = false;
 	int layoutDie = -1, layoutCount = -1;
+	float layoutResult = -1.0f, layoutTotal = -1.0f, layoutSeed = -1.0f;///< what the resting layout shows
 	std::future< roll::Plan > pending;
 	std::shared_ptr< std::atomic< bool > > pendingCancel;
 	std::vector< std::future< roll::Plan > > abandoned;

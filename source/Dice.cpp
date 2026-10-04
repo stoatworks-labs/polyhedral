@@ -383,16 +383,26 @@ void DicePlugin::Relayout()
 	plan        = roll::MakeRest( MakeRequest() );
 	rollStart   = clock;
 	laidOut     = true;
-	layoutDie   = static_cast< int >( Die() );
-	layoutCount = Count();
-	dataDirty   = true;
+	layoutDie    = static_cast< int >( Die() );
+	layoutCount  = Count();
+	layoutResult = params[ PT_RESULT ];
+	layoutTotal  = params[ PT_FIXED_TOTAL ];
+	layoutSeed   = params[ PT_SEED ];
+	dataDirty    = true;
 }
 
 void DicePlugin::Tick( double dt )
 {
 	clock += dt;
 
-	if( !laidOut || static_cast< int >( Die() ) != layoutDie || Count() != layoutCount )
+	//A new die or count lays the dice out again at once. So does a new Result,
+	//Fixed Total or Seed while the dice are still resting from the last layout
+	//(no throw since): before the first Roll, what is on the table previews
+	//what the controls ask for. Once thrown, the result stands until the next Roll.
+	const bool restingChanged = plan.idle && !pending.valid()
+	                            && ( params[ PT_RESULT ] != layoutResult || params[ PT_FIXED_TOTAL ] != layoutTotal
+	                                 || params[ PT_SEED ] != layoutSeed );
+	if( !laidOut || static_cast< int >( Die() ) != layoutDie || Count() != layoutCount || restingChanged )
 		Relayout();
 
 	if( rollPresses > 0 )

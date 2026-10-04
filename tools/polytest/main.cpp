@@ -918,6 +918,23 @@ int runOutcome( const Perturb& perturb )
 		                        geo::DieName( die ), plans, wrong, idle ) );
 	}
 
+	std::printf( "\n  At rest before any throw: the layout shows the Fixed Total too\n" );
+	for( geo::DieType die : kAllDice )
+	{
+		int wrong = 0, layouts = 0;
+		for( int value = 1; value <= geo::Sides( die ); value += ( die == geo::DieType::D100 ? 7 : 1 ) )
+		{
+			roll::Request r = baseRequest( die );
+			applyPerturb( r, perturb );
+			r.fixed      = true;
+			r.fixedTotal = value;
+			const roll::Plan rest = roll::MakeRest( r );
+			++layouts;
+			wrong += !rest.idle || shownValue( rest, die, 0 ) != value;
+		}
+		Check( wrong == 0, fmt( "%-4s %d resting layouts: %d showed something else", geo::DieName( die ), layouts, wrong ) );
+	}
+
 	std::printf( "\n  Random: every throw shows what was drawn, and the draw is a face the die has\n" );
 	for( geo::DieType die : kAllDice )
 	{
