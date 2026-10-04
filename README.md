@@ -37,6 +37,16 @@ planned on the page's thread, there are no installed fonts (pick a font file
 instead), and the effect runs on a generated clip. Read
 [what the page itself says it does not reproduce](https://polyhedral-demo.stoatworks-labs.com).
 
+[![Polyhedral — rigid-body polyhedral dice for Resolume](docs/video-thumb.png)](https://www.youtube.com/watch?v=7dv01OafMJg)
+
+*[Watch it](https://www.youtube.com/watch?v=7dv01OafMJg) — 95 seconds: a d20 thrown twice; the set from d4 to d100; Result
+Fixed landing three natural 20s; seven finishes; 6d6 with pips; Georgia, painted and
+engraved, with the 6 and 9 underlined; wireframe; and the Over effect on two of
+Resolume's demo clips, plain and with the Clip finish. Every frame is the real plugins'
+output: an FFGL plugin has no window, so the footage is rendered by this repository's own
+offline harness (`polytest --film` and `--over --pipe`, driven by cue sheets), not
+captured from Resolume.*
+
 <!-- downloads:start -->
 
 ## Download
