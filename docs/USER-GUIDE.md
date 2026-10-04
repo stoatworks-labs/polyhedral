@@ -21,8 +21,9 @@ Rendered by the plugin's offline harness, not captured from Resolume.*
 > dice. Ten deliberately wrong models are all detected, six one-character mutants of the shipped
 > code are all caught, and all 43 controls across the two plugins measurably do something. It has
 > **never been loaded into Resolume on macOS**. The one host it has run in on a Mac is the fleet's
-> own test host, `oxbow`, for 120 frames through each plugin. Try it on a spare layer before you
-> put it in a show.
+> own test host, `oxbow`, for 120 frames through each plugin. On Windows, a build of v0.1.0 loads,
+> registers and renders in Resolume Arena 7.27.1 with every control as declared, but on software
+> rendering with no GPU. Try it on a spare layer before you put it in a show.
 >
 > This codebase was created with AI assistance, directed and reviewed by a human author.
 

@@ -190,6 +190,29 @@ frame like a tray instead of enlarging it.
 argument; the harness then read argv[2] as NULL and crashed. Scripts that build
 argument lists go in a bash file.
 
+**An option's name read as 0.** `--set "Result=Fixed"` went through `strtof`,
+which reads "Fixed" as 0 and says nothing: the render showed a Random die that
+looked deliberate. `--set` now takes an option by name or index and refuses
+anything else; cue sheets refuse any value that is not wholly a number.
+
+**The Arena gate, against a die at rest** (`plugin-bench/arena/expect/polyhedral.json`).
+The gate never presses an event, so Roll Time, Interval, Throw, Spin and Bounce
+are `inert` there. Probing Auto Roll throws the dice, and after a throw the
+resting preview no longer follows Result, Fixed Total or Seed, so the rows that
+need a particular face showing also change Die, which lays the dice out again.
+A file in Font File beats the Font list, so Font's precondition empties it. A
+source's shadow over Table None falls on transparent, which Arena shows on black:
+Shadow needs a table, and at the default Size its change (0.17 levels at
+320×180) is under the gate's first-pass bar. The gate's second pass re-measures
+without the precondition (a gate bug), so Shadow also holds Size 1.0 and Camera
+Angle 30°, which clears the first pass.
+
+**A d20 rests across its roll.** It tends to stop with its last edge
+perpendicular to the way it was rolling, so throws from the same side of the
+frame often rest the same way round, give or take the three symmetries that
+carry one face onto another. That is physics, not a bug, but three natural 20s
+that rest alike read as one throw replayed: the video's Fixed beat uses Seed 8.
+
 ## Would this hold on another rasteriser, at another raster?
 
 - `--geometry`, `--symmetry`, `--labels`, `--outcome`, `--uniform`, `--rest`,
@@ -287,6 +310,5 @@ other demo in the fleet it **runs the plugin rather than a port of it**:
 
 ## Not done
 
-Never loaded into Resolume; never built on Windows; no presets, no OpenFX
-port, no user guide. The release workflows are boreal's,
-renamed, and have never run.
+Never loaded into Resolume on macOS; on Windows only the fleet's Arena gate, on
+software rendering (see the README's Status). No presets, no OpenFX port.

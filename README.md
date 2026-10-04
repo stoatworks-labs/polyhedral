@@ -2,8 +2,9 @@
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
 > (Anthropic), directed and reviewed by a human author. It has **never been
-> loaded into Resolume**, on any platform, and it has never been built on
-> Windows (see [Status](#status)). Everything below is measured by an offline
+> loaded into Resolume on macOS**; on Windows a build of this release loads,
+> registers and renders in Resolume Arena 7.27.1, but on software rendering with
+> no GPU (see [Status](#status)). Everything below is measured by an offline
 > harness that drives the real plugin classes in a headless GL context.
 > `polytest --outcome` throws every value of every die, two hundred and twenty
 > throws, and at rest the top face carries the value asked for every time;
@@ -118,14 +119,22 @@ the composition finds it again on a machine that has it.
 
 ## Status
 
-**v0.1.0, 2026-10-04, local, unreleased, and honestly early.**
+**v0.1.0, released 2026-10-04, and honestly early.** User guide:
+[stoatworks-labs.com/software/polyhedral/guide](https://stoatworks-labs.com/software/polyhedral/guide/).
 
-It has **never been loaded into Resolume** and **never been built on
-Windows**. `oxbow probe` reads the bundles as a host does (`SW Polyhedral` / `PY01` /
-source, `SW Dice Over` / `PY02` / effect) and `oxbow selftest` renders 120
-frames through each. No GitHub repo, no tag, not on the website, no user guide,
-no OpenFX port, no presets. Built and measured on macOS (Apple
-Silicon).
+It has **never been loaded into Resolume on macOS**. `oxbow probe` reads the
+bundles as a host does (`SW Polyhedral` / `PY01` / source, `SW Dice Over` /
+`PY02` / effect) and `oxbow selftest` renders 120 frames through each. Built and
+measured on macOS (Apple Silicon); no OpenFX port, no presets.
+
+**Windows, in Resolume Arena 7.27.1** (win-lab, Mesa llvmpipe, no GPU,
+2026-10-04): a CI build of this source loads from Extra Effects, `SW Polyhedral`
+registers as `PY01`, a source, and `SW Dice Over` as `PY02`, an effect; all 47
+and 49 host controls match the declaration (the two names at Resolume's length
+limit complete); both render with a font and a picture loaded from file
+(the fixtures), and Arena's log stays clean. GATE_CONTROLS Roll Time, Interval,
+Throw, Spin and Bounce act only during a throw, and the gate never presses Roll.
+Software rendering says nothing about a GPU or about speed.
 
 What is measured, on this machine:
 
@@ -161,9 +170,10 @@ most of it rethrowing cocked dice.
 
 What is **not** verified, and is the honest limit of this release:
 
-- **Never in Resolume.** Nothing here has met Arena's clock, its parameter
-  restore order (which the Font Name logic is built to survive, unseen), or a
-  real GPU other than this one. Windows has never been compiled.
+- **Never in Resolume on macOS, and on Windows only on software rendering.**
+  Nothing here has met Arena's clock through a real throw, its parameter restore
+  order across a saved composition (which the Font Name logic is built to
+  survive, unseen), or a real GPU other than this one.
 - **Real dice are quick.** A 20 mm die thrown across a frame-sized table is
   still in 0.3–0.7 s however hard it is thrown. A Roll Time longer than that
   plays the throw in slow motion (2 s is about 0.3×), easing a little toward the
@@ -206,7 +216,7 @@ throw on the render thread so every run is the same run:
 
     ./build/polytest --out /tmp/dice.png                    one throw to rest
     ./build/polytest --over --out /tmp/over.png             the effect, on a card
-    ./build/polytest --set "Die=1" --set "Count=3" --set "Result=1" --set "Fixed Total=12"
+    ./build/polytest --set "Die=D6" --set "Count=3" --set "Result=Fixed" --set "Fixed Total=12"
     ./build/polytest --geometry       the solids against a Monte Carlo of their planes
     ./build/polytest --symmetry       the rotation groups, and every S a throw uses
     ./build/polytest --labels         a real set's numbering
@@ -226,8 +236,9 @@ throw on the render thread so every run is the same run:
     ./build/polytest --bench          720p through 4K, and the planner's cost
     tools/verify.sh                 all of it, in about a minute and a half
 
-Filming uses the fleet's frame format and cue sheets (a press of Roll is three
-cues, 0 1 0, or `--roll N`):
+`--set` takes an option by its name or its index, and refuses a value that is
+neither (cue sheets take numbers only). Filming uses the fleet's frame format
+and cue sheets (a press of Roll is three cues, 0 1 0, or `--roll N`):
 
     ./build/polytest --film 300 --size 1280x720 --roll 10 --set "Table=1" \
       | ffmpeg -f rawvideo -pix_fmt rgba -s 1280x720 -r 60 -i - dice.mp4
