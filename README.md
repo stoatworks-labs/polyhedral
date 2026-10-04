@@ -37,6 +37,38 @@ planned on the page's thread, there are no installed fonts (pick a font file
 instead), and the effect runs on a generated clip. Read
 [what the page itself says it does not reproduce](https://polyhedral-demo.stoatworks-labs.com).
 
+<!-- downloads:start -->
+
+## Download
+
+**[v0.1.0](https://github.com/stoatworks-labs/polyhedral/releases/tag/v0.1.0)** — prebuilt for macOS and Windows. Pick your platform:
+
+<details>
+<summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`polyhedral-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/polyhedral/releases/download/v0.1.0/polyhedral-0.1.0-macos-universal.dmg) | 1.1 MB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`polyhedral-macos-universal.zip`](https://github.com/stoatworks-labs/polyhedral/releases/latest/download/polyhedral-macos-universal.zip) | 1.0 MB |
+
+</details>
+
+<details>
+<summary><b>Windows</b> — x64</summary>
+
+| Build | Download | Size |
+| --- | --- | --- |
+| x64 · .exe installer | [`polyhedral-0.1.0-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/polyhedral/releases/download/v0.1.0/polyhedral-0.1.0-windows-x86_64-setup.exe) | 368 KB |
+| x64 · .zip archive | [`polyhedral-windows-x86_64.zip`](https://github.com/stoatworks-labs/polyhedral/releases/latest/download/polyhedral-windows-x86_64.zip) | 546 KB |
+
+</details>
+
+All builds, checksums and release notes: [github.com/stoatworks-labs/polyhedral/releases](https://github.com/stoatworks-labs/polyhedral/releases).
+
+macOS builds are signed and notarised and open normally. The Windows builds are unsigned, so SmartScreen warns once.
+
+<!-- downloads:end -->
+
 ## The one idea
 
 **A die's rotation group lets the result be chosen without touching the
