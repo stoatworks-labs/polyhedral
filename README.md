@@ -132,9 +132,14 @@ measured on macOS (Apple Silicon); no OpenFX port, no presets.
 registers as `PY01`, a source, and `SW Dice Over` as `PY02`, an effect; all 47
 and 49 host controls match the declaration (the two names at Resolume's length
 limit complete); both render with a font and a picture loaded from file
-(the fixtures), and Arena's log stays clean. GATE_CONTROLS Roll Time, Interval,
-Throw, Spin and Bounce act only during a throw, and the gate never presses Roll.
-Software rendering says nothing about a GPU or about speed.
+(the fixtures), and Arena's log stays clean. Every control that can change the
+picture without a throw was shown doing so: 33 on the source and 35 on the effect
+(the two file controls load their fixtures and have no values to probe). Roll
+Time, Interval, Throw, Spin and Bounce act only during a throw, and the gate never
+presses Roll. On llvmpipe the first instance after Arena starts holds Arena's REST
+API for about 50 s, most likely the shader being compiled in software; a GPU's
+compiler has not been timed. Software rendering says nothing about a GPU or about
+speed.
 
 What is measured, on this machine:
 

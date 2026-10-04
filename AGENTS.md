@@ -202,10 +202,12 @@ resting preview no longer follows Result, Fixed Total or Seed, so the rows that
 need a particular face showing also change Die, which lays the dice out again.
 A file in Font File beats the Font list, so Font's precondition empties it. A
 source's shadow over Table None falls on transparent, which Arena shows on black:
-Shadow needs a table, and at the default Size its change (0.17 levels at
-320×180) is under the gate's first-pass bar. The gate's second pass re-measures
-without the precondition (a gate bug), so Shadow also holds Size 1.0 and Camera
-Angle 30°, which clears the first pass.
+Shadow needs a table, and on the default dark green felt at the default Size
+its change (0.17 levels at 320×180) is under the gate's first-pass bar. The
+gate's second pass re-measures without the precondition (a gate bug), so
+Shadow must clear the first pass: it holds a WHITE felt table, Size 1.0 and
+Camera Angle 30° (2.5 levels offline; Arena's thumbnail reads about half what
+polytest does, and Size and the camera alone came to 0.47 there).
 
 **A d20 rests across its roll.** It tends to stop with its last edge
 perpendicular to the way it was rolling, so throws from the same side of the
