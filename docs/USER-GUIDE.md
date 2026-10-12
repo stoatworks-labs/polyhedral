@@ -1,26 +1,26 @@
 # Polyhedral user guide
 
-Polyhedral is **polyhedral dice for [Resolume](https://resolume.com) Arena and Avenue**, as two
-FFGL plugins: **SW Polyhedral**, a source that throws dice onto a table, and **SW Dice Over**, an
-effect that throws them over your clip. Press **Roll**: the dice come in over the edge of the
-frame, tumble, bounce off the frame's edges and each other, and come to rest on a random result
-— or on the total you set — at exactly the Roll Time you set.
+Polyhedral is two FFGL plugins for [Resolume](https://resolume.com) Arena and Avenue that throw
+polyhedral dice: **SW Polyhedral**, a source that throws them onto a table, and **SW Dice Over**,
+an effect that throws them over your clip. Press **Roll** and the dice come in over the edge of the
+frame, tumble, bounce off the frame's edges and each other, and come to rest on a random result,
+or on the total you set, at exactly the Roll Time you set.
 
 ![A blue gem d20 at rest on 7 on green felt, its far faces' numbers showing through](hero.png)
 
 *A gem d20 come to rest on 7: the numbers on the faces beneath show through, mirrored.
-Rendered by the plugin's offline harness, not captured from Resolume.*
+Rendered by the plugin's offline harness rather than captured from Resolume.*
 
-> **Before you rely on this:** released at **v0.1.0**, and honestly early. What it does is
+> **Before you rely on this:** it's **v0.1.0**, and still early days. What it does is
 > measured rather than asserted, by a harness that drives the real plugin classes in a headless GL
 > context. Every value of every die was thrown, 220 throws, and each time the value asked for came
 > to rest on top; the harness then reads the number on top **out of the rendered picture**, in the
 > built-in face and in an installed font, and gets it right every time. Turning a die by the
 > symmetry that sets its result moves at most one pixel of its outline. The last die stops at
 > exactly Roll Time from 0.5 to 8 seconds, and Random results pass a chi-square test for all seven
-> dice. Ten deliberately wrong models are all detected, six one-character mutants of the shipped
-> code are all caught, and all 43 controls across the two plugins measurably do something. It has
-> **never been loaded into Resolume on macOS**. The one host it has run in on a Mac is the fleet's
+> dice. Ten models that are wrong on purpose are all detected, six one-character mutants of the shipped
+> code are all caught, and all 43 controls across the two plugins measurably do something. It's
+> **never been loaded into Resolume on macOS**. The one host it's run in on a Mac is the fleet's
 > own test host, `oxbow`, for 120 frames through each plugin. On Windows, a build of v0.1.0 loads,
 > registers and renders in Resolume Arena 7.27.1 with every control as declared, but on software
 > rendering with no GPU. Try it on a spare layer before you put it in a show.
@@ -31,7 +31,7 @@ Rendered by the plugin's offline harness, not captured from Resolume.*
 
 ## Installing
 
-Every download carries **both plugins**: the source and the effect. On macOS they are
+Each download has **both plugins** in it, the source and the effect. On macOS they're
 `Polyhedral.bundle` and `Polyhedral Over.bundle`; on Windows, `Polyhedral.dll` and
 `Polyhedral Over.dll`. Put both into Resolume's effects folder and restart Resolume:
 
@@ -40,23 +40,23 @@ macOS    ~/Documents/Resolume Arena/Extra Effects/
 Windows  %USERPROFILE%\Documents\Resolume Arena\Extra Effects\
 ```
 
-Avenue uses the same layout under its own folder name. **SW Polyhedral** then appears among the
-sources and **SW Dice Over** among the effects. (The effect is not "SW Polyhedral Over" because
+Avenue uses the same layout under its own folder name. **SW Polyhedral** then shows up among the
+sources and **SW Dice Over** among the effects. (The effect isn't "SW Polyhedral Over" because
 FFGL plugin names stop at 16 characters.)
 
-The macOS download is a universal build (Apple silicon and Intel), as a `.dmg` or a `.zip`. It is
-**Developer ID-signed and notarised**, so the bundles simply load. The Windows download is an x64
-installer or a `.zip`. It is not code-signed, so the installer trips SmartScreen once: **More
+The macOS download is a universal build (Apple silicon and Intel), as a `.dmg` or a `.zip`. It's
+**Developer ID-signed and notarised**, so the bundles just load. The Windows download is an x64
+installer or a `.zip`. It isn't code-signed, so the installer trips SmartScreen once: **More
 info** → **Run anyway**.
 
 ---
 
 ## Two plugins
 
-- **SW Polyhedral** (a source) throws the dice onto a table. With **Table** on *None* — the
-  default — there is no table at all: only the dice and their shadows, on a transparent layer, so
-  they land on whatever is underneath.
-- **SW Dice Over** (an effect) throws them over the clip it is on. With Table on *None* the clip
+- **SW Polyhedral** (a source) throws the dice onto a table. With **Table** on *None* (the
+  default) there's no table at all: only the dice and their shadows, on a transparent layer, so
+  they land on whatever's underneath.
+- **SW Dice Over** (an effect) throws them over the clip it's on. With Table on *None* the clip
   is the table, shadows and all. Its **Texture** list has one more entry, **Clip**, which puts the
   clip itself on every face of every die.
 
@@ -67,17 +67,18 @@ A look built on one carries across to the other.
 
 ## How a result is chosen
 
-Every die in a set has the same shape seen from every face: for any two faces there is a turn of
-the die that carries one onto the other and leaves the die looking exactly as it did. Polyhedral
-uses that. When you press Roll it throws the dice honestly, ahead of time — gravity, a knock at
-every contact, friction, bounce — until they come to rest. It reads which face ended on top, and
+Every die in a set has the same shape seen from every face: for any two faces there's a turn of
+the die that carries one onto the other and leaves the die looking just as it did. Polyhedral
+uses that. When you press Roll it throws the dice honestly, ahead of time (gravity, a knock at
+every contact, friction, bounce), until they come to rest. It reads which face ended up on top, and
 then draws each die turned by the one rotation that puts **your** number where that face is.
 
 The outline, every bounce and every shadow are the throw's own; only the numbers have moved round
-the die. So a Fixed result looks exactly as random as a Random one, and a Random result is drawn
-by the plugin (every face equally likely), not left to how the throw happened to go.
+the die. So a Fixed result looks exactly as random as a Random one (your players don't need to know), and
+a Random result is drawn by the plugin (every face equally likely) rather than left to how the
+throw happened to go.
 
-A die that comes to rest cocked — leaning on another die or against the edge — is thrown again
+A die that comes to rest cocked (leaning on another die or against the edge) is thrown again
 before you see anything, as at a table.
 
 ---
@@ -100,33 +101,33 @@ The roll starts a frame or two after the press: the throw is worked out on anoth
 
 ## The Roll group
 
-- **Die** — *D4*, *D6*, *D8*, *D10*, *D12*, *D20*, *D100*. The d10 is numbered 0–9 and its 0
+- **Die:** *D4*, *D6*, *D8*, *D10*, *D12*, *D20*, *D100*. The d10 is numbered 0–9 and its 0
   reads as 10. The d100 is two dice, a tens die (00–90) and a units die (0–9), read together:
   37 is 30 and 7, and 100 is 00 and 0.
-- **Count** — 1 to 6 dice (on the d100, 1 to 6 pairs).
-- **Roll** — the button. A press while the dice are still rolling throws again.
-- **Roll Time** — 0.4 to 8 seconds from release to rest, default 1.2. See *Real dice are quick*
+- **Count:** 1 to 6 dice (on the d100, 1 to 6 pairs).
+- **Roll:** the button. A press while the dice are still rolling throws again.
+- **Roll Time:** 0.4 to 8 seconds from release to rest, default 1.2. See *Real dice are quick*
   below.
-- **Result** — *Random* (each die equally likely to show any face) or *Fixed*.
-- **Fixed Total** — the total the dice show in *Fixed*, 1 to 600. Over several dice it is split
+- **Result:** *Random* (each die equally likely to show any face) or *Fixed*.
+- **Fixed Total:** the total the dice show in *Fixed*, 1 to 600. Over several dice it's split
   across them, every combination that makes it equally likely (three d6 for 12 might come up
-  4-4-4 or 6-5-1). A total the dice cannot make is clamped: two d6 cannot show 13, so they show 12.
-- **Seed** — 0 to 9999. The same seed replays the same sequence of throws, roll by roll: load a
+  4-4-4 or 6-5-1). A total the dice can't make is clamped: two d6 can't show 13, so they show 12.
+- **Seed:** 0 to 9999. The same seed replays the same sequence of throws, roll by roll: load a
   composition and the first Roll does what it did last time.
-- **Auto Roll** and **Interval** — throws by themselves, every 1 to 60 seconds (default 6).
+- **Auto Roll** and **Interval:** throws by themselves, every 1 to 60 seconds (default 6).
   Switching Auto Roll on throws at once.
-- **Throw** — where the dice come from: the *Left*, *Right*, *Bottom* or *Top* edge of the frame,
+- **Throw:** where the dice come from, the *Left*, *Right*, *Bottom* or *Top* edge of the frame,
   *Drop* from above, or *Any* (a different one each roll).
-- **Spin** — how fast they tumble as they leave the hand.
-- **Bounce** — the table's springiness, 0.1 (felt) to 0.8 (hardwood), default 0.5.
+- **Spin:** how fast they tumble as they leave the hand.
+- **Bounce:** the table's springiness, 0.1 (felt) to 0.8 (hardwood), default 0.5.
 
 ### Real dice are quick
 
-A real die thrown across a table this size is still in about half a second, however hard it is
+A real die thrown across a table this size is still in about half a second, however hard it's
 thrown: most of its energy goes in the first few knocks. So a Roll Time longer than that plays the
-throw in **slow motion** — 2 seconds is about a third of real speed — easing a little slower
-towards the end so the result lingers. That is how a tabletop close-up is filmed anyway, but it is
-slow motion, not a longer throw. Below about half a second the throw plays faster than real time.
+throw in **slow motion** (2 seconds is about a third of real speed), easing a little slower
+towards the end so the result lingers. That's how a tabletop close-up gets filmed anyway, but it's
+still slow motion rather than a longer throw. Below about half a second the throw plays faster than real time.
 
 ---
 
@@ -137,40 +138,40 @@ slow motion, not a longer throw. Below about half a second the throw plays faste
 *Eight throws, eight textures: marble, engraved pips, pearl, metal in Georgia, stone, gem,
 wireframe, and galaxy on the wooden table.*
 
-- **Texture** — *Plastic*, *Marble* (veins of Second Colour), *Pearl* (a sheen that shifts with the
+- **Texture:** *Plastic*, *Marble* (veins of Second Colour), *Pearl* (a sheen that shifts with the
   angle), *Metal*, *Gem* (see-through: the light refracts, the colour deepens with thickness, and
   the numbers on the far faces show through, mirrored), *Stone* (flecks of Second Colour), *Wood*
   (grain in Second Colour), *Galaxy* (nebulae in Second Colour and stars), *Image* (the Texture
   File on every face), *Wireframe* (glowing edges, front bright and back dim, and the numbers on the
   faces turned towards you), and on the effect *Clip*.
-- **Texture File** — a PNG, JPEG, BMP, TGA or GIF (its first frame), up to 4096 pixels on a side,
+- **Texture File:** a PNG, JPEG, BMP, TGA or GIF (its first frame), up to 4096 pixels on a side,
   for *Image*. Each face shows the picture centred on it.
-- **Colour** and **Second Colour** — the body and the pattern. A gem's Colour is how much light
+- **Colour** and **Second Colour:** the body and the pattern. A gem's Colour is how much light
   gets through two inradii of it, so a pale colour makes a pale gem.
-- **Gloss** — dull to polished.
-- **Edge** — how rounded the edges look. (The outline stays sharp; the light rounds them.)
-- **Line Width** — the wireframe's lines.
+- **Gloss:** dull to polished.
+- **Edge:** how rounded the edges look. (The outline stays sharp; the light rounds them.)
+- **Line Width:** the wireframe's lines.
 
 ---
 
 ## The Numbers group
 
-- **Font** — *Built-in* (stroked digits, the same on every machine) or any font installed on this
+- **Font:** *Built-in* (stroked digits, the same on every machine) or any font installed on this
   one.
-- **Font File** — any `.ttf`, `.otf`, `.ttc` or `.otc`, which beats the Font list.
-- **Font Name** — the family in use, as text. You can also type a family into it.
-- **Number Size** — how much of each face the number fills.
-- **Weight** — thinner or bolder than the font draws it.
-- **Ink** — the numbers' colour.
-- **Number Style** — *Painted*, or *Engraved* (cut into the face, so the light catches one side of
+- **Font File:** any `.ttf`, `.otf`, `.ttc` or `.otc`, which beats the Font list.
+- **Font Name:** the family in use, as text. You can also type a family into it.
+- **Number Size:** how much of each face the number fills.
+- **Weight:** thinner or bolder than the font draws it.
+- **Ink:** the numbers' colour.
+- **Number Style:** *Painted*, or *Engraved* (cut into the face, so the light catches one side of
   every stroke).
-- **Mark 6 and 9** — *None*, a *Dot* after them, or an *Underline*, on the dice that have both
+- **Mark 6 and 9:** *None*, a *Dot* after them, or an *Underline*, on the dice that have both
   (the d10, d12, d20 and the d100's units die).
-- **D6 Faces** — *Numbers* or *Pips*.
+- **D6 Faces:** *Numbers* or *Pips*.
 
 **Fonts travel by name.** The Font list is this machine's fonts, so its *position* means a
 different font on another computer. Polyhedral keeps the family's name in Font Name, a saved
-composition stores both, and when they disagree the name wins. If the next machine does not have
+composition stores both, and when they disagree the name wins. If the next machine doesn't have
 the font, the numbers fall back to the built-in face and Font Name keeps the name, so the
 composition finds the font again wherever it is installed.
 
@@ -184,28 +185,28 @@ visible faces is the roll.
 
 ## The Scene group
 
-- **Size** — how big a die is, as a fraction of the frame's height. With several dice, the view
+- **Size:** how big a die is, as a fraction of the frame's height. With several dice, the view
   widens as far as it must for all of them to land in shot, so six dice at a close-up Size come out
   smaller than asked. One die keeps any close-up.
-- **Camera Angle** — 30 degrees (low across the table) to 90 (straight down). Default 70.
-- **Light Angle** — where the light comes from, round the table.
-- **Shadow** — how dark the shadows are; 0 removes them.
-- **Table** — *None* (transparent: only the dice and their shadows), *Felt* or *Wood*.
-- **Table Colour** — the felt or the wood.
+- **Camera Angle:** 30 degrees (low across the table) to 90 (straight down). Default 70.
+- **Light Angle:** where the light comes from, round the table.
+- **Shadow:** how dark the shadows are; 0 removes them.
+- **Table:** *None* (transparent: only the dice and their shadows), *Felt* or *Wood*.
+- **Table Colour:** the felt or the wood.
 
 The dice stay in the frame: its edges are the walls they bounce off. During a throw a die can still
-cross an edge for a moment — they come in over it, and a die bouncing high towards the camera
-looks bigger than the frame — but at rest every die is in shot.
+cross an edge for a moment (they come in over it, and a die bouncing high towards the camera
+looks bigger than the frame), but at rest every die is in shot.
 
 ---
 
 ## SW Dice Over
 
 Everything above, over the clip. **Mix** fades between the clip alone (0) and the clip with the
-dice (1). Where there is no die and no shadow, the clip comes through untouched, pixel for pixel.
+dice (1). Where there's no die and no shadow, the clip comes through untouched, pixel for pixel.
 
-**Texture: Clip** maps the clip onto every face, each face showing the middle of the picture. It is
-the moving clip, so the dice carry it as they tumble.
+**Texture: Clip** maps the clip onto every face, each face showing the middle of the picture. It's
+the moving clip, so the dice carry it round as they tumble.
 
 ---
 
@@ -234,32 +235,32 @@ median frame, on a machine shared with other builds, so the spread is between ru
 Working out a throw, on its own thread, takes about 0.5 ms for one die, 12 ms for six and 30 ms
 for twelve, most of it throwing again the times a die comes to rest cocked.
 
-Nothing was timed inside Resolume, and nothing was timed on Windows.
+I haven't timed it inside Resolume, or on Windows.
 
 ---
 
 ## If it looks wrong
 
 **Nothing happens when I press Roll.** The roll starts a frame or two after the press, and lands
-at Roll Time; at 8 seconds it is a slow throw. A paused composition freezes it.
+at Roll Time; at 8 seconds it's a slow throw. A paused composition freezes it.
 
 **I see no table.** Table is *None*, the default: only the dice and their shadows are drawn, so the
 layer goes over whatever is underneath. Choose *Felt* or *Wood*.
 
 **The dice are smaller than Size says.** There are several of them, and the view has widened so
-they all fit. Lower Count, or accept it.
+they all fit. Lower Count, or live with it.
 
-**My font changed on another computer.** The font is not installed there; the numbers use the
+**My font changed on another computer.** The font isn't installed there; the numbers use the
 built-in face, and Font Name still holds the name. Install the font, or choose another.
 
-**The Image texture is grey.** The Texture File would not load (wrong format, or larger than 4096
+**The Image texture is grey.** The Texture File wouldn't load (wrong format, or larger than 4096
 on a side). The log says why.
 
 **The dice are thrown slowly.** Roll Time is longer than a real throw takes, so the throw plays in
 slow motion. Lower it towards a second for real speed.
 
-**The effect does nothing at all.** A shader that will not compile looks exactly like that. The
-real message is in the log:
+**The effect does nothing at all.** A shader that won't compile looks just like that. The
+actual message is in the log:
 
 ```
 macOS    ~/Library/Logs/polyhedral/polyhedral.YYYY-MM-DD.log
@@ -267,7 +268,7 @@ Windows  %LOCALAPPDATA%\polyhedral\logs\polyhedral.YYYY-MM-DD.log
 ```
 
 It records the GL vendor, renderer and version at load, a shader that failed, the font in use (and
-a named font that is not installed), a Texture File that would not load, and every roll: its
+a named font that isn't installed), a Texture File that wouldn't load, and every roll: its
 results, how many throws it took, and how much it was slowed.
 
 ---
@@ -282,7 +283,7 @@ inside the walls and apart; the last die stopping at Roll Time; free flight on t
 no contact ever adding energy, and a drop rebounding at the Bounce asked for; the same seed giving
 the same throw byte for byte; fonts by name, list, file and missing; the clip untouched by the
 effect where it must be; and the GL state handed back to the host. Every check also runs against a
-deliberately wrong model and must fail it, and a sweep fails if any control does nothing.
+model that's wrong on purpose and has to fail it, and a sweep fails if any control does nothing.
 
 **Assumed, or not verified:**
 
@@ -290,17 +291,17 @@ deliberately wrong model and must fail it, and a sweep fails if any control does
   the groups present in the inspector, the clock's unit, and the order in which a composition
   restores Font and Font Name are untested there.
 - **The physics is its own**, not a physics library's: corners and edges knocking on the table,
-  the walls and each other. It is checked for energy, bounce, free flight and the resting state,
-  not against film of real dice. The table's friction and the felt's rolling resistance are chosen
-  to look right.
+  the walls and each other. It's checked for energy, bounce, free flight and the resting state,
+  not against film of real dice. The table's friction and the felt's rolling resistance were picked
+  because they looked right.
 - **A die is laid exactly flat** over its last 0.15 seconds if it settles less than a degree off;
   more than that is a cocked die and a rethrow.
 - **The rounded edges are shading**: the outline is the sharp solid.
-- **The gem** is one refraction through the die and out, not a full light simulation.
+- **The gem** is one refraction through the die and out, rather than a full light simulation.
 - **The same seed gives the same results everywhere**, because they come from the plugin's own
   random numbers or from your total. The throw itself may differ between a Mac and a Windows
   machine: the two compile the arithmetic slightly differently.
-- **The inspector shows slider positions.** Polyhedral does not supply its own display text, so
+- **The inspector shows slider positions.** Polyhedral doesn't supply its own display text, so
   expect the panel to show where each slider is rather than seconds or degrees. This guide gives
   the ranges.
 - **Not timed in a host, or on Windows.** No OpenFX version.
@@ -309,7 +310,7 @@ deliberately wrong model and must fail it, and a sweep fails if any control does
 
 ## About
 
-The last group in the source's panel, **About**, carries the plugin's name, version, licence and
+The last group in the source's panel, **About**, has the plugin's name, version, licence and
 maker, and buttons that open this guide, the project page, the source on GitHub and the support
 page in your browser. In the effect, Mix follows it.
 
@@ -320,6 +321,6 @@ page in your browser. In the effect, Mix follows it.
 
 ## Reporting something
 
-[github.com/stoatworks-labs/polyhedral/issues](https://github.com/stoatworks-labs/polyhedral/issues).
+Open an issue at [github.com/stoatworks-labs/polyhedral/issues](https://github.com/stoatworks-labs/polyhedral/issues).
 A screenshot, the Die, Count and Texture, any controls you moved, whether it was the source or the
-effect, and the composition's resolution and frame rate are usually enough.
+effect, and the composition's resolution and frame rate are usually enough to go on.

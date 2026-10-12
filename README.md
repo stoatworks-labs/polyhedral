@@ -1,51 +1,42 @@
 # polyhedral
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
-> (Anthropic), directed and reviewed by a human author. It has **never been
-> loaded into Resolume on macOS**; on Windows a build of this release loads,
-> registers and renders in Resolume Arena 7.27.1, but on software rendering with
-> no GPU (see [Status](#status)). Everything below is measured by an offline
-> harness that drives the real plugin classes in a headless GL context.
-> `polytest --outcome` throws every value of every die, two hundred and twenty
-> throws, and at rest the top face carries the value asked for every time;
-> `--readback` then reads the number on top **out of the rendered pixels**, in the
-> built-in face and in Georgia, and the wanted number beats every other number
-> that die carries. `--silhouette` shows that turning a die by the symmetry that
-> sets its result moves **at most one pixel** of its outline. `--duration` stops
-> the last die at exactly Roll Time from 0.5 to 8 s, still moving a frame before.
-> `polytest --negative` re-runs ten checks against deliberately wrong models, and
-> `tools/mutate.sh` changes one character of the shipped shader and C++; every one
-> is caught. A control sweep fails if any parameter does nothing.
+> (Anthropic), directed and reviewed by a human author. It's **never been loaded into
+> Resolume on macOS**; on Windows a build of this release loads, registers and renders in
+> Resolume Arena 7.27.1, but on software rendering with no GPU. Everything else is measured by
+> an offline harness that drives the real plugin classes in a headless GL context. The full
+> rundown, and the list of things I haven't tried yet, is under [Status](#status).
 
-Polyhedral dice for Resolume Arena/Avenue, as two FFGL plugins: **SW Polyhedral**, a
+Polyhedral dice for Resolume Arena and Avenue, as two FFGL plugins: **SW Polyhedral**, a
 source that throws a d4, d6, d8, d10, d12, d20 or d100 onto the table, and
-**SW Dice Over**, an effect that throws them over your clip. Press **Roll**; the
+**SW Dice Over**, an effect that throws them over your clip. Press **Roll** and the
 dice tumble, bounce off the edges of the frame and each other, and come to rest
-on a random result — or on the **Fixed Total** you set — at exactly **Roll Time**.
+on a random result, or on the **Fixed Total** you set, at exactly **Roll Time**. Useful for
+when the story needs a natural 20 and can't wait for one to turn up.
 
 ![A blue gem d20 at rest on 7 on green felt, its far faces' numbers showing through](docs/hero.png)
 
 <sub>A gem d20 come to rest on 7: the numbers on the faces beneath show through,
 mirrored, refracted and deepened by the blue. Rendered by the plugin's offline
-harness (`polytest`), not captured from Resolume.</sub>
+harness (`polytest`) rather than captured from Resolume.</sub>
 
-**[Try it in your browser](https://polyhedral-demo.stoatworks-labs.com)** — both
+**[Try it in your browser](https://polyhedral-demo.stoatworks-labs.com)**: both
 plugins, with every control, running the plugin's own C++ (physics, planner,
-numbering, fonts, the plugin class itself) compiled unmodified to WebAssembly
-and its own GLSL in WebGL2. It is not the plugin in Resolume: throws are
+numbering, fonts, the plugin class itself) compiled unmodified to WebAssembly,
+and its own GLSL in WebGL2. It isn't the plugin in Resolume, though: throws are
 planned on the page's thread, there are no installed fonts (pick a font file
-instead), and the effect runs on a generated clip. Read
-[what the page itself says it does not reproduce](https://polyhedral-demo.stoatworks-labs.com).
+instead), and the effect runs on a generated clip. Have a read of
+[what the page itself says it doesn't reproduce](https://polyhedral-demo.stoatworks-labs.com).
 
-[![Polyhedral — rigid-body polyhedral dice for Resolume](docs/video-thumb.png)](https://www.youtube.com/watch?v=7dv01OafMJg)
+[![Polyhedral: rigid-body polyhedral dice for Resolume](docs/video-thumb.png)](https://www.youtube.com/watch?v=7dv01OafMJg)
 
-*[Watch it](https://www.youtube.com/watch?v=7dv01OafMJg) — 95 seconds: a d20 thrown twice; the set from d4 to d100; Result
-Fixed landing three natural 20s; seven finishes; 6d6 with pips; Georgia, painted and
-engraved, with the 6 and 9 underlined; wireframe; and the Over effect on two of
-Resolume's demo clips, plain and with the Clip finish. Every frame is the real plugins'
-output: an FFGL plugin has no window, so the footage is rendered by this repository's own
-offline harness (`polytest --film` and `--over --pipe`, driven by cue sheets), not
-captured from Resolume.*
+*[Watch it](https://www.youtube.com/watch?v=7dv01OafMJg) (95 seconds): a d20 thrown twice, the
+set from d4 to d100, Result Fixed landing three natural 20s, seven finishes, 6d6 with pips,
+Georgia painted and engraved with the 6 and 9 underlined, wireframe, and the Over effect on two
+of Resolume's demo clips, plain and with the Clip finish. It's all the plugins' own output. An
+FFGL plugin doesn't have a window to film, so the footage comes from this repo's offline harness
+(`polytest --film` and `--over --pipe`, driven by cue sheets) rather than a screen recording of
+Resolume.*
 
 <!-- downloads:start -->
 
@@ -82,10 +73,10 @@ macOS builds are signed and notarised and open normally. The Windows builds are 
 ## The one idea
 
 **A die's rotation group lets the result be chosen without touching the
-physics.** Every die in a set is face-transitive: for any two faces there is a
-rotation of the solid onto itself that carries one to the other — twelve of them
+physics.** Every die in a set is face-transitive: for any two faces there's a
+rotation of the solid onto itself that carries one to the other (twelve of them
 for the d4, twenty-four for the d6 and d8, ten for the d10, sixty for the d12 and
-d20. So the plugin:
+d20). So the plugin:
 
 1. **throws the dice honestly**, ahead of time: rigid bodies, gravity, an
    impulse at every contact, friction, restitution, from the edge of the frame
@@ -94,23 +85,23 @@ d20. So the plugin:
 3. **draws each die as R(t)·S**, where S is the symmetry that carries the wanted
    face onto that one.
 
-Because S maps the solid onto itself, every frame of the outline, every bounce,
-every shadow is exactly what the physics produced; only the paint has turned.
-The die lands on the number asked for and nothing in the motion gives it away.
-Random results come from an integer PRNG (uniform by construction, not by
-trusting a simulation to be fair), Fixed ones from you, and both go through the
-same mechanism.
+Because S maps the solid onto itself, every frame of the outline, every bounce and
+every shadow is exactly what the physics produced. Only the paint has turned, so
+the die lands on the number asked for and nothing in the motion gives it away.
+Random results come from an integer PRNG (uniform by construction, rather than
+trusting a simulation to be fair), Fixed ones come from you, and both go through
+the same trick.
 
-What falls out of it:
+What you get for free:
 
-- **Any die, any result, any duration**, with a real tumble every time. The
+- **Any die, any result, any duration**, with a proper tumble every time. The
   planner throws, measures how long the dice took to settle, and throws again
   harder or softer with a fresh sub-seed; playback then runs the throw at
   whatever rate makes the last die stop on Roll Time.
 - **Several dice at once** (Count, up to six; six pairs for the d100), colliding
   with each other and the frame's edges. A Fixed result is a **total**, split
   across the dice uniformly over every combination that makes it.
-- **The d100 as the real thing**: a tens die (00–90) and a units die (0–9)
+- **The d100 the way it's done at the table**: a tens die (00–90) and a units die (0–9)
   thrown together; 100 is 00 and 0.
 - **A real set's numbering**: opposite faces sum to n + 1 (d6, d8, d12, d20) or 9
   (the d10's 0–9); the d6 has 1, 2, 3 counter-clockwise round a corner; the
@@ -135,36 +126,36 @@ behind it, galaxy d10s on the wooden table. Rendered by `polytest`.</sub>
   sum of the dice), Seed (the same seed replays the same sequence of throws),
   Auto Roll and Interval (1–60 s), Throw (*Left*, *Right*, *Bottom*, *Top*,
   *Drop* from above, *Any*), Spin, Bounce (the table's restitution, 0.1–0.8).
-- **Dice:** Texture (*Plastic*, *Marble*, *Pearl*, *Metal*, *Gem* — refracts, and
-  shows the far faces' numbers through the near ones — *Stone*, *Wood*,
-  *Galaxy*, *Image* — the Texture File on every face — *Wireframe*, and on the
+- **Dice:** Texture (*Plastic*, *Marble*, *Pearl*, *Metal*, *Gem* (refracts, and
+  shows the far faces' numbers through the near ones), *Stone*, *Wood*,
+  *Galaxy*, *Image* (the Texture File on every face), *Wireframe*, and on the
   effect *Clip*, the clip itself on every face), Texture File, Colour, Second
   Colour (marble's veins, stone's flecks, wood's grain, the galaxy's nebula),
   Gloss, Edge (how rounded the edges look), Line Width (Wireframe).
 - **Numbers:** Font (*Built-in*, then every font installed on the machine),
-  Font File (any .ttf/.otf/.ttc), Font Name (the family, as text — see below),
+  Font File (any .ttf/.otf/.ttc), Font Name (the family, as text; see below),
   Number Size, Weight, Ink, Number Style (*Painted*, *Engraved*), Mark 6 and 9
   (*None*, *Dot*, *Underline*), D6 Faces (*Numbers*, *Pips*).
 - **Scene:** Size (the die as a fraction of the frame's height; with several
   dice the view widens as far as it must for all of them to land in shot), Camera Angle
-  (30° to straight down), Light Angle, Shadow, Table (*None* — transparent, only
-  the shadows, so the layer goes over whatever is under it — *Felt*, *Wood*),
+  (30° to straight down), Light Angle, Shadow, Table (*None*, transparent apart
+  from the shadows so the layer goes over whatever's under it, then *Felt* and *Wood*),
   Table Colour.
 - **Over only:** Mix. The effect's Table *None* is the clip, with the dice's
   shadows on it.
 
 **Fonts travel by name.** The Font dropdown stores an index into *this*
-machine's font list, which is a different font on the next rig. The plugin keeps
-the family in Font Name, a composition restores both, and the name wins; a font
-the next machine lacks falls back to the built-in face with the name kept, so
+machine's font list, which is a different font on the next rig. So the plugin keeps
+the family in Font Name, a composition restores both, and the name wins. A font
+the next machine hasn't got falls back to the built-in face with the name kept, so
 the composition finds it again on a machine that has it.
 
 ## Status
 
-**v0.1.0, released 2026-10-04, and honestly early.** User guide:
+**v0.1.0, released 2026-10-04, and still early days.** User guide:
 [stoatworks-labs.com/software/polyhedral/guide](https://stoatworks-labs.com/software/polyhedral/guide/).
 
-It has **never been loaded into Resolume on macOS**. `oxbow probe` reads the
+It's **never been loaded into Resolume on macOS**. `oxbow probe` reads the
 bundles as a host does (`SW Polyhedral` / `PY01` / source, `SW Dice Over` /
 `PY02` / effect) and `oxbow selftest` renders 120 frames through each. Built and
 measured on macOS (Apple Silicon); no OpenFX port, no presets.
@@ -179,11 +170,11 @@ picture without a throw was shown doing so: 33 on the source and 35 on the effec
 (the two file controls load their fixtures and have no values to probe). Roll
 Time, Interval, Throw, Spin and Bounce act only during a throw, and the gate never
 presses Roll. On llvmpipe the first instance after Arena starts holds Arena's REST
-API for about 50 s, most likely the shader being compiled in software; a GPU's
-compiler has not been timed. Software rendering says nothing about a GPU or about
+API for about 50 s, most likely the shader being compiled in software; I haven't
+timed a GPU's compiler. Software rendering says nothing about a GPU or about
 speed.
 
-What is measured, on this machine:
+What's measured, on this Mac:
 
 | | |
 | --- | --- |
@@ -216,24 +207,24 @@ worker thread, so the roll starts a frame or two after the press: **0.5 ms**
 for one die, **12 ms** for six (worst 15), **28–30 ms** for twelve (worst 70),
 most of it rethrowing cocked dice.
 
-What is **not** verified, and is the honest limit of this release:
+What **isn't** verified yet:
 
 - **Never in Resolume on macOS, and on Windows only on software rendering.**
-  Nothing here has met Arena's clock through a real throw, its parameter restore
-  order across a saved composition (which the Font Name logic is built to
-  survive, unseen), or a real GPU other than this one.
+  Nothing here has met Arena's clock through a real throw, the order Arena restores
+  parameters in from a saved composition (which the Font Name logic is built to
+  survive, unseen), or any real GPU but mine.
 - **Real dice are quick.** A 20 mm die thrown across a frame-sized table is
-  still in 0.3–0.7 s however hard it is thrown. A Roll Time longer than that
+  still in 0.3–0.7 s however hard it's thrown. A Roll Time longer than that
   plays the throw in slow motion (2 s is about 0.3×), easing a little toward the
-  end so the reveal lingers. That is how a tabletop close-up is filmed, but it
-  is slow motion, not a longer throw.
-- **The contact model is mine, not a library's**: vertices against planes,
-  edges against edges, sequential impulses, a sleep test. It is checked for
+  end so the reveal lingers. That's how a tabletop close-up gets filmed, but it's
+  still slow motion rather than a longer throw.
+- **The contact model is my own, not a library's**: vertices against planes,
+  edges against edges, sequential impulses, a sleep test. It's checked for
   energy, restitution, free flight and the resting state, not against a
-  measured die. The rolling damping (felt) is a constant chosen to look right.
+  measured die. The rolling damping (felt) is a constant picked because it looked right.
 - **The rest is snapped.** A die the sleep test leaves under 1° off flat is
   turned flat over its last 0.15 s; more than 1° is a cocked die and a rethrow.
-- **Size is a request, not a promise, for several dice.** A frame too tight for
+- **With several dice, Size is more of a request.** A frame too tight for
   Count of them is widened until they fit, so six dice at a close-up Size come
   out smaller than asked. One die keeps any close-up: its walls move past the
   frame instead and the throw is moved to rest mid-frame.
@@ -284,7 +275,7 @@ throw on the render thread so every run is the same run:
     ./build/polytest --bench          720p through 4K, and the planner's cost
     tools/verify.sh                 all of it, in about a minute and a half
 
-`--set` takes an option by its name or its index, and refuses a value that is
+`--set` takes an option by its name or its index, and refuses a value that's
 neither (cue sheets take numbers only). Filming uses the fleet's frame format
 and cue sheets (a press of Roll is three cues, 0 1 0, or `--roll N`):
 
