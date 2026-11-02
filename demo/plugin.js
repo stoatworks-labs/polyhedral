@@ -233,7 +233,7 @@ const HINTS = {
   'Line Width': 'The Wireframe’s lines, as a fraction of the die’s inradius r. Wireframe only.',
   Font: 'Built-in, then every font installed on the machine. A web page cannot list this computer’s fonts, and the plugin’s own scan finds none in the page’s memory, so the list here is Built-in alone.',
   'Font File': 'A .ttf, .otf, .ttc or .otc you pick, written into the page’s memory and loaded by the plugin’s own font loader. It wins over Font and Font Name; Font Name then shows its family.',
-  'Font Name': 'The family, as text: it travels with a composition, and wins over Font. With no installed fonts here, any name falls back to the built-in face and is kept as typed — the plugin’s own path for a font a machine lacks. Sent on Enter.',
+  'Font Name': 'The family, as text, which wins over Font. Typed in, it travels with a composition; a family picked from Font is saved by Arena as its place in the list. With no installed fonts here, any name falls back to the built-in face and is kept as typed — the plugin’s own path for a font a machine lacks. Sent on Enter.',
   'Number Size': 'The number’s height relative to the room on its face, 0.3 to 1.1.',
   Weight: 'Thinner or bolder strokes, ±0.06 of the digits’ height H.',
   Ink: 'The numbers’ colour.',

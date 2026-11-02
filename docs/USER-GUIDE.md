@@ -159,7 +159,8 @@ wireframe, and galaxy on the wooden table.*
 - **Font:** *Built-in* (stroked digits, the same on every machine) or any font installed on this
   one.
 - **Font File:** any `.ttf`, `.otf`, `.ttc` or `.otc`, which beats the Font list.
-- **Font Name:** the family in use, as text. You can also type a family into it.
+- **Font Name:** a family, typed as text, which wins over the Font list. Use it for a composition
+  that moves between machines (see below).
 - **Number Size:** how much of each face the number fills.
 - **Weight:** thinner or bolder than the font draws it.
 - **Ink:** the numbers' colour.
@@ -169,11 +170,15 @@ wireframe, and galaxy on the wooden table.*
   (the d10, d12, d20 and the d100's units die).
 - **D6 Faces:** *Numbers* or *Pips*.
 
-**Fonts travel by name.** The Font list is this machine's fonts, so its *position* means a
-different font on another computer. Polyhedral keeps the family's name in Font Name, a saved
-composition stores both, and when they disagree the name wins. If the next machine doesn't have
-the font, the numbers fall back to the built-in face and Font Name keeps the name, so the
-composition finds the font again wherever it is installed.
+**Type the name if the composition is going anywhere.** The Font list is this machine's fonts,
+and Arena saves a family picked from it as its *position* in that list, which means a different
+font on another computer. Polyhedral writes the family into Font Name when you pick, but Arena
+keeps its own copy of every control and never reads that back, so the name it writes is never
+saved. A name you type into Font Name is saved as the name, and it wins over the list when the
+composition opens. Once you've typed one, change font by typing another: the typed name is the one
+that comes back. If the next machine doesn't have the font, the numbers fall back to the built-in
+face and Font Name keeps the name, so the composition finds the font again wherever it is
+installed.
 
 Every die is numbered as a real set is: opposite faces add up to one more than the number of faces
 (7 on a d6, 21 on a d20; 9 on the d10's 0–9); the d6 has 1, 2 and 3 meeting at a corner,
@@ -250,8 +255,11 @@ layer goes over whatever is underneath. Choose *Felt* or *Wood*.
 **The dice are smaller than Size says.** There are several of them, and the view has widened so
 they all fit. Lower Count, or live with it.
 
-**My font changed on another computer.** The font isn't installed there; the numbers use the
-built-in face, and Font Name still holds the name. Install the font, or choose another.
+**My font changed on another computer.** If you picked it from the Font list, the composition
+saved its place in this machine's list, and that place holds a different font over there. Type the
+family into Font Name and save the composition again. If you typed it, the font isn't installed
+there: the numbers use the built-in face, and Font Name still holds the name. Install the font, or
+choose another.
 
 **The Image texture is grey.** The Texture File wouldn't load (wrong format, or larger than 4096
 on a side). The log says why.
@@ -290,6 +298,10 @@ model that's wrong on purpose and has to fail it, and a sweep fails if any contr
 - **Never loaded into Resolume on macOS**, and no Resolume has driven the controls on a Mac. How
   the groups present in the inspector, the clock's unit, and the order in which a composition
   restores Font and Font Name are untested there.
+- **A font picked from the list is saved as its position, not its name.** That was found with
+  Knockout, which handles fonts the same way, saved and reopened in Arena 7.28.1 on a Mac.
+  Polyhedral hasn't been through that test itself, but Arena treats every plugin's controls the
+  same way.
 - **The physics is its own**, not a physics library's: corners and edges knocking on the table,
   the walls and each other. It's checked for energy, bounce, free flight and the resting state,
   not against film of real dice. The table's friction and the felt's rolling resistance were picked

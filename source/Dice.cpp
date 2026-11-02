@@ -490,10 +490,12 @@ void DicePlugin::ResolveFont()
 		loaded = true;
 	else
 	{
-		//The dropdown stores an INDEX into this machine's font list; the
-		//Font Name stores the family. A composition restores both before the
-		//next frame, and then the name wins -- index 47 is a different font
-		//on the next rig. Only the dropdown moving on its own picks by index.
+		//The dropdown stores an INDEX into this machine's font list; a name
+		//set in Font Name wins over it, here and when a composition restores
+		//both -- index 47 is a different font on the next rig. Arena saves
+		//only a TYPED name: it never reads back the one written below, so a
+		//picked family is saved as its index alone (seen in Knockout, Arena
+		//7.28.1). Only the dropdown moving on its own picks by index.
 		int chosen = -1;
 		if( nameSet )
 		{
@@ -519,8 +521,9 @@ void DicePlugin::ResolveFont()
 	if( index > 0 || resolvedFamily.empty() )
 		params[ PT_FONT ] = static_cast< float >( std::max( index, 0 ) );
 	{
-		//The field shows the family in use, so a saved composition carries it
-		//-- except when a typed name was not found: kept as typed, so the same
+		//The field shows the family in use to polytest and the demo, which
+		//read it back. Arena never does, so this never reaches a composition.
+		//A typed name that was not found is kept as typed, so the same
 		//composition finds it on a machine that has it.
 		std::lock_guard< std::mutex > lock( textMutex );
 		if( !( fromName && !name.empty() && resolvedFamily.empty() ) )

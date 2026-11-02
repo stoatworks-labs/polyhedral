@@ -71,8 +71,15 @@ landing within a float rounding of it).
   request for several dice; for one die it is exact.
 - **Fonts**: downpour's scan and loader, a signed-distance atlas instead of a
   bitmap (a number is seen at every size and slant), a built-in stroked face
-  as the default (the same everywhere). The family name travels in Font Name
-  and wins when a composition restores both it and the index (see below).
+  as the default (the same everywhere). A family set in Font Name wins over the
+  index, in polytest and when a composition restores both (see below). Only a
+  TYPED name reaches a composition: Arena keeps its own copy of every parameter,
+  saves Font as the index and never reads back the Font Name the plugin fills in
+  after a pick, and Resolume ignores `FF_EVENT_FLAG_VALUE` (afterglow's AGENTS.md,
+  "Presets"), so raising one would change nothing. Seen in Knockout, same design,
+  Arena 7.28.1, 2026-11-02: the saved `.avc` held `Font` = 55 and no Font Name.
+  The README and guide say to type the name; don't claim more without watching a
+  composition move between two machines.
 - **No presets, no audio trigger, no total readout** in 0.1.0. All three are
   obvious next steps; none is needed for the request.
 - **`StoatworksAbout.h`, `ATTRIBUTIONS.md` and the issue forms are
@@ -267,7 +274,8 @@ Assumed or chosen, not measured:
 - The d10's proportions (1.1 times as tall as wide) and every die's size.
 - The look of every material; the Gem's single refraction.
 - That Resolume restores Font Name and Font in the same pause between frames
-  (the name-wins logic depends on it). Never seen in Arena.
+  (the name-wins logic depends on it). Never seen in Arena, and it only matters
+  for a typed name: a picked one is never saved (Fonts, above).
 - That Arena's FFGL clock behaves as boreal measured it (seconds or
   milliseconds, voted on against the wall clock).
 

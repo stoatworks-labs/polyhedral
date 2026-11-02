@@ -144,11 +144,15 @@ behind it, galaxy d10s on the wooden table. Rendered by `polytest`.</sub>
 - **Over only:** Mix. The effect's Table *None* is the clip, with the dice's
   shadows on it.
 
-**Fonts travel by name.** The Font dropdown stores an index into *this*
-machine's font list, which is a different font on the next rig. So the plugin keeps
-the family in Font Name, a composition restores both, and the name wins. A font
-the next machine hasn't got falls back to the built-in face with the name kept, so
-the composition finds it again on a machine that has it.
+**Type the font's name if the composition is going anywhere.** Arena saves a
+family picked from the Font dropdown as its position in *this* machine's font list,
+which is a different font on the next rig. The plugin writes the family into Font
+Name when you pick, but Arena keeps its own copy of every control and never reads
+that back, so the saved composition holds the position and no name at all. A name
+you type into Font Name is saved as the name, and it wins over the list when the
+composition opens; once you've typed one, change font by typing another. A typed
+font the next machine hasn't got falls back to the built-in face with the name
+kept, so the composition finds it again on a machine that has it.
 
 ## Status
 
@@ -211,8 +215,11 @@ What **isn't** verified yet:
 
 - **Never in Resolume on macOS, and on Windows only on software rendering.**
   Nothing here has met Arena's clock through a real throw, the order Arena restores
-  parameters in from a saved composition (which the Font Name logic is built to
-  survive, unseen), or any real GPU but mine.
+  parameters in from a saved composition, or any real GPU but mine.
+- **A picked font is saved as a list position, not a name.** That was found with
+  Knockout, which does fonts the same way, saved and reopened in Arena 7.28.1 on a
+  Mac. Polyhedral hasn't been through that test itself, but Arena treats every
+  plugin's controls the same way. Type the name (see Controls above).
 - **Real dice are quick.** A 20 mm die thrown across a frame-sized table is
   still in 0.3–0.7 s however hard it's thrown. A Roll Time longer than that
   plays the throw in slow motion (2 s is about 0.3×), easing a little toward the
