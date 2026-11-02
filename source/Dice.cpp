@@ -151,12 +151,14 @@ DicePlugin::DicePlugin( bool effect ) : isEffect( effect )
 	// The font list is scanned here, once per process. It has to be declared
 	// in the constructor -- SetParamElementInfo is how a host learns a
 	// dropdown's contents (downpour's note). The scan reads only name tables.
+	// Each family's element carries FontValue, not its position: Arena saves
+	// the value, and a position is a different family on the next rig.
 	//-------------------------------------------------------------------
 	const std::vector< FontFile >& fonts = InstalledFonts();
 	SetOptionParamInfo( PT_FONT, "Font", static_cast< unsigned int >( fonts.size() + 1 ), 0.0f );
 	SetParamElementInfo( PT_FONT, 0, "Built-in", 0.0f );
 	for( size_t i = 0; i < fonts.size(); ++i )
-		SetParamElementInfo( PT_FONT, static_cast< unsigned int >( i + 1 ), fonts[ i ].family.c_str(), static_cast< float >( i + 1 ) );
+		SetParamElementInfo( PT_FONT, static_cast< unsigned int >( i + 1 ), fonts[ i ].family.c_str(), FontValue( static_cast< int >( i ) ) );
 	SetFileParamInfo( PT_FONT_FILE, "Font File", { "ttf", "otf", "ttc", "otc" }, "" );
 	SetParamInfo( PT_FONT_NAME, "Font Name", FF_TYPE_TEXT, "" );
 	standard( PT_NUMBER_SIZE, "Number Size" );
@@ -490,12 +492,12 @@ void DicePlugin::ResolveFont()
 		loaded = true;
 	else
 	{
-		//The dropdown stores an INDEX into this machine's font list; a name
-		//set in Font Name wins over it, here and when a composition restores
-		//both -- index 47 is a different font on the next rig. Arena saves
-		//only a TYPED name: it never reads back the one written below, so a
-		//picked family is saved as its index alone (seen in Knockout, Arena
-		//7.28.1). Only the dropdown moving on its own picks by index.
+		//The dropdown holds a family's FontValue, made from its name, and
+		//Arena saves that: it never reads back the Font Name written below,
+		//so a picked family travels as its value alone (Knockout, Arena
+		//7.28.1). A name set in Font Name wins over it, here and when a
+		//composition restores both. Only the dropdown moving on its own picks
+		//from it.
 		int chosen = -1;
 		if( nameSet )
 		{
@@ -505,7 +507,17 @@ void DicePlugin::ResolveFont()
 				diag::warn( "font '" + name + "' is not installed here; using the built-in face" );
 		}
 		else
-			chosen = OptionIndex( params[ PT_FONT ], static_cast< int >( fonts.size() ) + 1 ) - 1;
+		{
+			//A small value is a position from a composition v0.1.0
+			//saved, and opens as it did there (FindFontByValue).
+			const long value = std::lround( params[ PT_FONT ] );
+			chosen           = FindFontByValue( params[ PT_FONT ] );
+			if( value > 0 && value < static_cast< long >( kPositionValues ) )
+				diag::info( "the Font list's value " + std::to_string( value ) +
+				            " is a place in the list, from an older composition; pick the font again to save it by name" );
+			else if( chosen < 0 && value != 0 )
+				diag::warn( "the Font list's value " + std::to_string( value ) + " is no font installed here; using the built-in face" );
+		}
 		(void)indexMoved;
 		if( chosen >= 0 && typeface.Load( fonts[ static_cast< size_t >( chosen ) ].path, fonts[ static_cast< size_t >( chosen ) ].collectionIndex ) )
 			loaded = true;
@@ -517,14 +529,15 @@ void DicePlugin::ResolveFont()
 
 	atlas          = typeface.Build();
 	resolvedFamily = atlas.family;
-	const int index = resolvedFamily.empty() ? 0 : FindFontByFamily( resolvedFamily ) + 1;
-	if( index > 0 || resolvedFamily.empty() )
-		params[ PT_FONT ] = static_cast< float >( std::max( index, 0 ) );
+	const int found = resolvedFamily.empty() ? -1 : FindFontByFamily( resolvedFamily );
+	if( found >= 0 || resolvedFamily.empty() )
+		params[ PT_FONT ] = FontValue( found );
 	{
 		//The field shows the family in use to polytest and the demo, which
-		//read it back. Arena never does, so this never reaches a composition.
-		//A typed name that was not found is kept as typed, so the same
-		//composition finds it on a machine that has it.
+		//read it back. Arena never does, so this never reaches a composition:
+		//the dropdown's value is what carries a picked family. A typed name
+		//that was not found is kept as typed, so the same composition finds
+		//it on a machine that has it.
 		std::lock_guard< std::mutex > lock( textMutex );
 		if( !( fromName && !name.empty() && resolvedFamily.empty() ) )
 			fontName = resolvedFamily;

@@ -88,7 +88,8 @@ the label layout or the data texture's rows.
   `v*` tag runs `release.yml` (both platforms, the Windows installer, the
   release); `workflow_dispatch` on a branch builds the same without publishing.
 - `polytest --set` takes an option by name or index and refuses anything else;
-  until v0.1.0 a name went through `strtof` and silently became 0.
+  until v0.1.0 a name went through `strtof` and silently became 0. Either way it
+  sets that element's value, as a host does: Font's are `FontValue`, not indices.
 
 ## Browser demo
 - `demo/` is https://polyhedral-demo.stoatworks-labs.com (Worker

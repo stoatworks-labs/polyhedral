@@ -72,14 +72,24 @@ landing within a float rounding of it).
 - **Fonts**: downpour's scan and loader, a signed-distance atlas instead of a
   bitmap (a number is seen at every size and slant), a built-in stroked face
   as the default (the same everywhere). A family set in Font Name wins over the
-  index, in polytest and when a composition restores both (see below). Only a
-  TYPED name reaches a composition: Arena keeps its own copy of every parameter,
-  saves Font as the index and never reads back the Font Name the plugin fills in
-  after a pick, and Resolume ignores `FF_EVENT_FLAG_VALUE` (afterglow's AGENTS.md,
-  "Presets"), so raising one would change nothing. Seen in Knockout, same design,
-  Arena 7.28.1, 2026-11-02: the saved `.avc` held `Font` = 55 and no Font Name.
-  The README and guide say to type the name; don't claim more without watching a
-  composition move between two machines.
+  dropdown, in polytest and when a composition restores both (see below).
+- **The Font dropdown's element values are `FontValue`, not positions** (after
+  v0.1.0). Arena saves an option as its element VALUE, keeps its own copy of every
+  parameter and never reads back the Font Name the plugin fills in after a pick;
+  Resolume ignores `FF_EVENT_FLAG_VALUE` (afterglow's AGENTS.md, "Presets"), so
+  raising one would change nothing. With positions as values, as in v0.1.0, a
+  picked family reopened elsewhere as whatever sat at that position: Knockout,
+  same design, saved `Font` = 55 and no Font Name (Arena 7.28.1, 2026-11-02).
+  `FontValue` is Knockout's fix (its bb1e05b), ported: FNV-1a of the lowered
+  family name folded to 24 bits so a float holds it exactly, 0 kept for
+  Built-in, a taken value moving up one. Knockout's came back as the same family
+  in Arena on a different font folder; this port is checked by `polytest --fonts`
+  only. Saved compositions hold these values, so never change the arithmetic.
+  Values below `kPositionValues` (65536) are positions from v0.1.0 compositions,
+  read as v0.1.0 read them (clamped to the list) with an info line in the log; a
+  name whose value lands there moves up by 65536, so the two never meet. Chosen
+  2026-11-02 so an old composition opens as it always has, not as the built-in
+  face; a small number can't be told from a hash otherwise.
 - **No presets, no audio trigger, no total readout** in 0.1.0. All three are
   obvious next steps; none is needed for the request.
 - **`StoatworksAbout.h`, `ATTRIBUTIONS.md` and the issue forms are
@@ -263,7 +273,7 @@ Verified (numbers in README "Status"): the result shown is the result asked for
 (Fixed, every value, every die; Random; Fixed totals over several dice), read
 both from the geometry and out of the pixels; S changes no pixel of the
 outline; groups, numbering and uniformity; rest, duration, free flight, energy,
-restitution; fonts by name, index, file and missing; GL state; the clip
+restitution; fonts by name, list value, file and missing; GL state; the clip
 untouched by the effect.
 
 Assumed or chosen, not measured:
@@ -274,8 +284,8 @@ Assumed or chosen, not measured:
 - The d10's proportions (1.1 times as tall as wide) and every die's size.
 - The look of every material; the Gem's single refraction.
 - That Resolume restores Font Name and Font in the same pause between frames
-  (the name-wins logic depends on it). Never seen in Arena, and it only matters
-  for a typed name: a picked one is never saved (Fonts, above).
+  (the name-wins logic depends on it). Never seen in Arena; it matters only when
+  a typed Font Name and the dropdown disagree.
 - That Arena's FFGL clock behaves as boreal measured it (seconds or
   milliseconds, voted on against the wall clock).
 

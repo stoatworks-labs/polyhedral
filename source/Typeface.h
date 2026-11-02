@@ -51,6 +51,29 @@ const std::vector< FontFile >& InstalledFonts();
 /// Index of the font whose family matches (case-insensitive), or -1.
 int FindFontByFamily( const std::string& family );
 
+/// Font list values below this are positions, as v0.1.0 saved them: 0
+/// the built-in face, 1 the first installed font. No name's value is below
+/// it, so an old composition's number cannot be mistaken for a name's.
+constexpr uint32_t kPositionValues = 1u << 16;
+
+/// What the Font list gives installed font `font` as its element value, which
+/// is what a host saves. A position in this machine's list is another family
+/// on the next, so the value comes from the name: the same family gets the
+/// same value whatever else is installed. 0 for -1, the built-in face.
+float FontValue( int font );
+/// The installed font whose FontValue is `value`, or -1: the built-in face
+/// (0), or a composition saved with a family this machine has not got. A
+/// value below kPositionValues is read as v0.1.0 read it, as a place in
+/// this machine's list, clamped to its end.
+int FindFontByValue( float value );
+/// FontValue's arithmetic for any list of names in list order, exposed for
+/// the harness. Knockout's: FNV-1a over the lowered name folded to 24 bits,
+/// so a float holds it exactly; one that lands below kPositionValues moves up
+/// by it. A name whose value is taken moves up by one, so only two colliding
+/// names depend on order (a few hundred families give a pair about one
+/// machine in 300).
+std::vector< uint32_t > FontValues( const std::vector< std::string >& names );
+
 struct DigitAtlas
 {
 	static constexpr int kCell    = 128;

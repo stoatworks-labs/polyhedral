@@ -144,20 +144,30 @@ behind it, galaxy d10s on the wooden table. Rendered by `polytest`.</sub>
 - **Over only:** Mix. The effect's Table *None* is the clip, with the dice's
   shadows on it.
 
-**Type the font's name if the composition is going anywhere.** Arena saves a
-family picked from the Font dropdown as its position in *this* machine's font list,
-which is a different font on the next rig. The plugin writes the family into Font
-Name when you pick, but Arena keeps its own copy of every control and never reads
-that back, so the saved composition holds the position and no name at all. A name
-you type into Font Name is saved as the name, and it wins over the list when the
-composition opens; once you've typed one, change font by typing another. A typed
-font the next machine hasn't got falls back to the built-in face with the name
-kept, so the composition finds it again on a machine that has it.
+**Fonts travel by name, from the next release.** Each family in the Font dropdown
+carries a number made from its name rather than its place in *this* machine's list,
+and that number is what Arena saves, so a composition finds the same family on a
+rig with a different set of fonts. On one without it, the numbers fall back to the
+built-in face with a warning in the log, and the composition keeps the choice for
+the next machine that has it. Font Name is the same choice typed, and wins over the
+list when the composition opens; once you've typed one, change font by typing
+another. **v0.1.0 saves a picked family as its place in the list**, which is a
+different font on the next rig, and Arena never reads back the name the plugin
+writes into Font Name: with v0.1.0, type the name for a composition that's going
+anywhere. A composition saved by v0.1.0 still opens as it did, its place read the
+way v0.1.0 read it: names' numbers start at 65,536, so a place can't be mistaken
+for one. Arena's list will show nothing picked for it, as for any number none of
+its entries has; pick the font again and save, and from then on it goes by name.
 
 ## Status
 
 **v0.1.0, released 2026-10-04, and still early days.** User guide:
 [stoatworks-labs.com/software/polyhedral/guide](https://stoatworks-labs.com/software/polyhedral/guide/).
+
+**On main, not released yet:** a font picked from the list is saved as a number
+made from its name, not its place in the list (Controls above), so it survives a
+move to a machine with other fonts, and a composition saved by v0.1.0 opens as it
+did. `polytest --fonts` checks it; Polyhedral's build of it hasn't been in Arena.
 
 It's **never been loaded into Resolume on macOS**. `oxbow probe` reads the
 bundles as a host does (`SW Polyhedral` / `PY01` / source, `SW Dice Over` /
@@ -192,7 +202,7 @@ What's measured, on this Mac:
 | duration | Roll Time 0.5, 1, 2, 4, 8 s × four dice: the last die settles at Roll Time to 10⁻⁹ s and is still moving one frame before |
 | physics | free flight is the exact parabola to **2.5×10⁻¹⁵ m** over 0.5 s; in 40,000 steps of hard throws no kept contact solve added kinetic energy; a flat drop rebounds at e = 0.209, 0.515, 0.818 for Bounce 0.2, 0.5, 0.8 (tolerance 0.026: one step's travel over the drop) |
 | geometry | volume and inertia tensor of every solid against a million-point Monte Carlo of its planes, to 0.04–0.25% and 0.2–0.7% |
-| fonts | the built-in strokes' field is the half-width on every centreline to 0.006 H; Georgia's ten digits fill 0.005–0.995 H; the name, dropdown, file and missing-font paths each resolve as described above |
+| fonts | the built-in strokes' field is the half-width on every centreline to 0.006 H; Georgia's ten digits fill 0.005–0.995 H; the name, dropdown, file and missing-font paths each resolve as described above; the dropdown's values follow each family's name, not its place, and a value saved on another machine finds its family or the built-in face |
 | Over | the clip is **bit-exact** more than five die radii from any die, and Mix 0 is the clip, at 320×180 and 640×360 |
 | determinism | the same seed and roll: identical keyframes, byte for byte |
 | tables | every face loop, the rotation groups' order, each number's slot and up vector and every label: **identical** from arm64 with fused multiply-adds, arm64 without, and x86_64, so both halves of the universal bundle and the browser demo print every number the same way up |
@@ -216,10 +226,11 @@ What **isn't** verified yet:
 - **Never in Resolume on macOS, and on Windows only on software rendering.**
   Nothing here has met Arena's clock through a real throw, the order Arena restores
   parameters in from a saved composition, or any real GPU but mine.
-- **A picked font is saved as a list position, not a name.** That was found with
-  Knockout, which does fonts the same way, saved and reopened in Arena 7.28.1 on a
-  Mac. Polyhedral hasn't been through that test itself, but Arena treats every
-  plugin's controls the same way. Type the name (see Controls above).
+- **The font fix rests on Knockout's test.** Knockout did fonts the way v0.1.0
+  does, and Arena 7.28.1 on a Mac saved a picked one as its place in the list. Its
+  fix, the number made from the name that main now has too, came back as the same
+  family in Arena on a different set of fonts. Polyhedral's own build of it is
+  checked by `polytest --fonts` only.
 - **Real dice are quick.** A 20 mm die thrown across a frame-sized table is
   still in 0.3–0.7 s however hard it's thrown. A Roll Time longer than that
   plays the throw in slow motion (2 s is about 0.3×), easing a little toward the
