@@ -8,16 +8,45 @@
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./vendor/kit.css" />
     <link rel="canonical" href="https://polyhedral-demo.stoatworks-labs.com/" />
+    <meta name="project-page" content="https://stoatworks-labs.com/software/polyhedral/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Stoatworks Labs" />
+    <meta property="og:title" content="Polyhedral — browser demo | Stoatworks Labs" />
+    <meta property="og:description" content="Try the Polyhedral FFGL source and effect for Resolume in your browser: polyhedral dice thrown onto a table or over a clip, landing on a random or fixed result at exactly Roll Time. The plugin's own C++ — physics, planner, numbering, fonts — compiled unmodified to WebAssembly, drawing with its own GLSL in WebGL2. A demo, not the plugin." />
+    <meta property="og:url" content="https://polyhedral-demo.stoatworks-labs.com/" />
+    <meta property="og:image" content="https://stoatworks-labs.com/thumbs/polyhedral.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+    <meta property="og:image:alt" content="Polyhedral" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <main id="demo">
       <noscript>
+        <h1>Polyhedral</h1>
+        <p>
+          An FFGL source that throws polyhedral dice onto the table, and an
+          effect that throws them over a clip. The d4, d6, d8, d10, d12, d20 and
+          the d100's pair tumble with proper rigid-body physics, bounce off the
+          frame's edges and each other, and land on a random result or on the
+          total you set, at exactly the Roll Time you set. Every die is
+          face-transitive, so the throw is simulated straight and the die is
+          then drawn turned by whichever symmetry puts the wanted number on top:
+          the motion is the physics', and only the paint has turned. Numbers in
+          any installed font, and faces in marble, pearl, metal, gem, stone,
+          wood, galaxy, a picture or a wireframe.
+        </p>
         <p>
           This demo runs the plugin's own C++, compiled to WebAssembly, and its
           shaders in your browser, so it needs JavaScript and WebGL2. The plugin
           itself, its source and its downloads are on
           <a href="https://github.com/stoatworks-labs/polyhedral">its repository</a>.
         </p>
+        <ul>
+          <li><a href="https://stoatworks-labs.com/software/polyhedral/">Project page and downloads</a></li>
+          <li><a href="https://stoatworks-labs.com/software/polyhedral/guide/">User guide</a></li>
+          <li><a href="https://github.com/stoatworks-labs/polyhedral">Source on GitHub</a></li>
+        </ul>
       </noscript>
     </main>
 
